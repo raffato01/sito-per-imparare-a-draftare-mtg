@@ -6,4 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: './', // Ensures relative asset resolution on GitHub Pages
+  build: {
+    outDir: 'docs', // Outputs production build to /docs for direct GitHub Pages main branch hosting
+  }
 })
