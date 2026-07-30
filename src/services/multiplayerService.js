@@ -4,6 +4,33 @@ import Peer from 'peerjs';
 
 const ROOM_PREFIX = 'mtgdraft-';
 
+// Robust ICE Servers configuration for cross-network (NAT traversal)
+const PEER_CONFIG = {
+  debug: 1,
+  config: {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      // Free public TURN server for restrictive symmetric NATs
+      {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      }
+    ]
+  }
+};
+
 export class MultiplayerService {
   constructor() {
     this.peer = null;
@@ -27,9 +54,7 @@ export class MultiplayerService {
       this.myNickname = nickname || 'Host';
       const hostPeerId = `${ROOM_PREFIX}${roomCode.toLowerCase()}`;
 
-      this.peer = new Peer(hostPeerId, {
-        debug: 1
-      });
+      this.peer = new Peer(hostPeerId, PEER_CONFIG);
 
       this.peer.on('open', (id) => {
         console.log('Room created as Host:', id);
@@ -60,7 +85,7 @@ export class MultiplayerService {
       this.myNickname = nickname || 'Ospite';
       const hostPeerId = `${ROOM_PREFIX}${this.roomCode.toLowerCase()}`;
 
-      this.peer = new Peer({ debug: 1 });
+      this.peer = new Peer(PEER_CONFIG);
 
       this.peer.on('open', (myPeerId) => {
         const conn = this.peer.connect(hostPeerId);
