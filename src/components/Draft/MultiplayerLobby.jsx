@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateRoomCode, realtimeMultiplayerInstance } from '../../services/multiplayerService';
 import { TRANSLATIONS } from '../../data/translations';
-import { Users, Sparkles, Copy, Check, ArrowRight, UserPlus, Hash, Radio, Loader2 } from 'lucide-react';
+import { Users, Sparkles, Copy, Check, ArrowRight, UserPlus, Hash, Radio, Loader2, Wifi } from 'lucide-react';
 
 export function MultiplayerLobby({ onStartMultiplayerDraft, onCancel, lang = 'it' }) {
   const [roomCode, setRoomCode] = useState('');
@@ -132,21 +132,38 @@ export function MultiplayerLobby({ onStartMultiplayerDraft, onCancel, lang = 'it
       
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-extrabold tracking-wider">
-          <Radio size={14} className="animate-pulse text-emerald-400" />
-          <span>{isIT ? 'STANZE MULTIPLAYER REALTIME (WEBSOCKET)' : 'REALTIME WEBSOCKET MULTIPLAYER'}</span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-extrabold tracking-wider">
+          <Wifi size={14} className="animate-pulse text-amber-400" />
+          <span>{isIT ? 'STANZE MULTIPLAYER — RETE LOCALE (SAME WIFI / LOCALHOST)' : 'MULTIPLAYER ROOMS — LOCAL NETWORK (SAME WIFI)'}</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight">
-          {isIT ? 'Drafta in Tempo Reale con i ' : 'Draft Realtime with your '}
+          {isIT ? 'Drafta in Rete Locale con i ' : 'Draft on Local Network with your '}
           <span className="bg-gradient-to-r from-amber-400 via-rose-400 to-purple-400 bg-clip-text text-transparent">
             {isIT ? 'Tuoi Amici' : 'Friends'}
           </span>
         </h2>
         <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
           {isIT
-            ? 'Crea una stanza e condividi il codice. Vedrai i tuoi amici entrare nella stanza in tempo reale da qualsiasi dispositivo o rete!'
-            : 'Create a room and share the code. You will see your friends join the room live in real time from any network!'}
+            ? 'Crea una stanza e condividi il codice. Tutti i giocatori connessi alla stessa rete WiFi vedranno la stanza ed i partecipanti in tempo reale!'
+            : 'Create a room and share the code. All players connected to the same local WiFi will see room participants in real time!'}
         </p>
+      </div>
+
+      {/* Local Network / Localhost Warning Banner */}
+      <div className="bg-amber-500/10 border-2 border-amber-500/50 rounded-3xl p-5 shadow-xl flex items-start gap-4">
+        <div className="p-2.5 bg-amber-500/20 text-amber-400 rounded-2xl shrink-0">
+          <Wifi size={24} />
+        </div>
+        <div className="space-y-1 text-xs sm:text-sm">
+          <h4 className="font-extrabold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+            <span>{isIT ? '⚠️ REQUISITO FONDAMENTALE: STESSA RETE WIFI / LOCALHOST' : '⚠️ MANDATORY REQUIREMENT: SAME WIFI / LOCALHOST'}</span>
+          </h4>
+          <p className="text-slate-200 leading-relaxed">
+            {isIT
+              ? 'La modalità Multiplayer con Codice Stanza è progettata per funzionare **esclusivamente quando tutti i dispositivi (telefono o PC) sono connessi alla stessa rete WiFi locale**. Assicurati che tutti i tuoi amici siano connessi allo stesso WiFi prima di inserire il codice!'
+              : 'Multiplayer mode is designed to work **exclusively when all devices (phones or PCs) are connected to the same local WiFi network**. Make sure all your friends are on the same WiFi network before entering the code!'}
+          </p>
+        </div>
       </div>
 
       {errorMsg && (
