@@ -131,6 +131,124 @@ When opening a 15-card pack, how do you decide which card is best? Magic pro pla
         'D = Dregs (Filler/sideboard cards)'
       ]
     }
+  },
+  {
+    id: 'deckbuilding',
+    title: '3. Deckbuilding & Curva di Mana',
+    subtitle: 'Come trasformare le tue scelte in un mazzo vincente',
+    titles: {
+      it: '3. Deckbuilding & Curva di Mana',
+      en: '3. Deckbuilding & Mana Curve'
+    },
+    subtitles: {
+      it: 'Come trasformare le tue scelte in un mazzo vincente',
+      en: 'How to turn your drafted cards into a winning deck'
+    },
+    icon: 'Layers',
+    badge: 'Costruzione Mazzo',
+    contents: {
+      it: `
+Avere buone carte non basta, serve un mazzo bilanciato! A fine Draft avrai circa 45 carte, ma il tuo mazzo dovrà essere di **esattamente 40 carte** (è il numero ideale per pescare le carte migliori più spesso).
+
+### La Proporzione d'Oro (17-15-8):
+- **17 Terre**: Di solito divise tra i tuoi 2 colori primari (es. 9 Foreste, 8 Montagne).
+- **15-18 Creature**: Hai bisogno di pezzi sulla scacchiera per attaccare e difendere.
+- **5-8 Magie non creatura**: Rimozioni, potenziamenti o magie per pescare.
+
+### La Curva di Mana:
+Una partita si vince nei primi turni. Non puoi avere solo Draghi a costo 6! La tua **Curva di Mana** deve concentrarsi sui costi bassi:
+- **Costo 1**: 0-2 carte (non fondamentali nel Draft).
+- **Costo 2**: 4-6 carte (FONDAMENTALI! Ti servono creature da giocare subito).
+- **Costo 3**: 4-6 carte (Il cuore del mazzo).
+- **Costo 4**: 3-5 carte.
+- **Costo 5+**: 2-4 carte (Le tue 'Bombe' di fine partita).
+      `,
+      en: `
+Drafting good cards isn't enough; you need a balanced deck! At the end of the Draft you will have around 45 cards, but your deck should be **exactly 40 cards** (the minimum allowed, which maximizes your chances of drawing your best cards).
+
+### The Golden Ratio (17-15-8):
+- **17 Lands**: Usually split between your 2 primary colors (e.g. 9 Forests, 8 Mountains).
+- **15-18 Creatures**: You need a solid board presence to attack and defend.
+- **5-8 Non-creature Spells**: Removals, combat tricks, and card draw.
+
+### The Mana Curve:
+Games are often decided in the early turns. You can't rely just on 6-mana Dragons! Your **Mana Curve** should peak at lower costs:
+- **1-drops**: 0-2 cards (usually low impact in Draft).
+- **2-drops**: 4-6 cards (CRITICAL! You need proactive early plays).
+- **3-drops**: 4-6 cards (The core of your deck).
+- **4-drops**: 3-5 cards.
+- **5+ drops**: 2-4 cards (Your late-game 'Bombs').
+      `
+    },
+    highlightList: {
+      it: [
+        'Mazzo da ESATTAMENTE 40 carte (mai di più!)',
+        '17 Terre sono lo standard d\'oro',
+        'Almeno 15 Creature per avere stabilità sul campo',
+        'Punta ad avere molte creature a costo 2 e 3 mana'
+      ],
+      en: [
+        'EXACTLY 40-card deck (never play more!)',
+        '17 Lands is the golden standard',
+        'At least 15 Creatures for consistent board presence',
+        'Focus heavily on 2-drop and 3-drop creatures'
+      ]
+    }
+  },
+  {
+    id: 'signals',
+    title: '4. Trovare la tua Corsia (Segnali)',
+    subtitle: 'Capire quali colori sono "aperti" al tavolo',
+    titles: {
+      it: '4. Trovare la tua Corsia (Segnali)',
+      en: '4. Reading Signals (Finding your Lane)'
+    },
+    subtitles: {
+      it: 'Capire quali colori sono "aperti" al tavolo',
+      en: 'Understanding which colors are "open" at the table'
+    },
+    icon: 'Flame',
+    badge: 'Strategia Avanzata',
+    contents: {
+      it: `
+Durante il primo pacchetto, la cosa più importante non è forzare i colori della tua prima "Bomba", ma **rimanere aperti** e leggere i segnali.
+
+### Cos'è un Segnale?
+Se al Pick 5 o 6 ti arriva una carta *Removal* fortissima o una *Creatura eccezionale* Nera, significa che i 4 giocatori alla tua destra **non stanno draftando Nero**. Quel colore è **"aperto"**.
+Se ti posizioni su un colore aperto, sarai ricompensato nel Pacchetto 2 e 3 con tantissime carte forti di quel colore!
+
+### Regole d'Oro per la Scelta dei Colori:
+- **Pick 1-3**: Scegli semplicemente le carte più forti in assoluto (Bombe e Rimozioni), a prescindere dal colore.
+- **Pick 4-8**: Osserva cosa ti arriva di buono. Inizia a delineare i tuoi **2 colori principali**.
+- **Mai 3 colori (all'inizio)**: Evita di giocare 3 colori senza Terre speciali (fixing), altrimenti rischierai di avere in mano carte che non puoi lanciare (il famoso *Mana Screw*). Resta su 2 colori!
+      `,
+      en: `
+During the first pack, the most important thing is not forcing the colors of your first "Bomb", but **staying open** and reading signals.
+
+### What is a Signal?
+If at Pick 5 or Pick 6 you are passed an incredibly strong Black *Removal* or premium *Creature*, it means the 4 players passing to you are likely **not drafting Black**. That color is **"open"**.
+If you move into an open color, you will be heavily rewarded in Pack 2 and Pack 3 with great cards!
+
+### Golden Rules for Color Commitment:
+- **Pick 1-3**: Simply take the most powerful cards overall (Bombs & Premium Removal), regardless of color.
+- **Pick 4-8**: Notice what strong cards are late in the pack. Start committing to your **2 primary colors**.
+- **Avoid 3 colors (usually)**: Unless you draft a lot of mana fixing (dual lands), stick to a strict 2-color deck. Playing 3 colors increases the risk of not having the right mana (*Mana Screw*).
+      `
+    },
+    highlightList: {
+      it: [
+        'Pick 1-3: Prendi le carte più forti',
+        'Pick 4-8: Leggi i segnali (carte forti passate tardi)',
+        'Un colore "aperto" ti premierà nei pack successivi',
+        'Gioca sempre 2 Colori (non 1, non 3)'
+      ],
+      en: [
+        'Pick 1-3: Take the highest power level cards',
+        'Pick 4-8: Read signals (premium cards passed late)',
+        'Moving into an "open" color rewards you later',
+        'Always play a 2-Color deck (not 1, not 3)'
+      ]
+    }
   }
 ];
 
@@ -152,19 +270,35 @@ export const GLOSSARY = [
     }
   },
   {
-    term: 'Mana Curve',
-    desc: 'Distribuzione delle carte nel mazzo in base al loro Costo di Mana Convertito (CMC).',
+    term: 'Mana Curve / Curva di Mana',
+    desc: 'Distribuzione delle carte nel mazzo in base al loro Costo di Mana (CMC).',
     descs: {
-      it: 'Distribuzione delle carte nel mazzo in base al loro Costo di Mana Convertito (CMC).',
-      en: 'Distribution of cards in your deck sorted by their Mana Cost (CMC).'
+      it: 'Distribuzione delle carte nel mazzo in base al loro Costo di Mana (CMC). Ideale avere molte carte a costo 2 e 3.',
+      en: 'Distribution of cards in your deck sorted by their Mana Cost (CMC). Ideal curve peaks at 2 and 3 drops.'
     }
   },
   {
-    term: 'Removal',
+    term: 'Removal / Rimozione',
     desc: 'Magie che distruggono, esiliano o neutralizzano creature o minacce avversarie.',
     descs: {
       it: 'Magie che distruggono, esiliano o neutralizzano creature o minacce avversarie.',
       en: 'Spells that destroy, exile, or counter opponent creatures and threats.'
+    }
+  },
+  {
+    term: 'Splash / Splashare',
+    desc: 'Giocare 1 o 2 carte potentissime di un terzo colore, inserendo solo 2-3 terre di quel colore.',
+    descs: {
+      it: 'Giocare 1 o 2 carte potentissime di un terzo colore, inserendo solo 2-3 terre di quel colore.',
+      en: 'Playing 1 or 2 powerful cards of a third color by adding just 2-3 lands of that color.'
+    }
+  },
+  {
+    term: 'Open Color / Colore Aperto',
+    desc: 'Un colore che i giocatori vicini a te non stanno draftando.',
+    descs: {
+      it: 'Un colore che i giocatori vicini a te non stanno draftando, lasciandoti le carte migliori.',
+      en: 'A color that neighboring players are not drafting, allowing good cards to reach you.'
     }
   }
 ];

@@ -1,214 +1,117 @@
-// WebRTC PeerJS Multiplayer Service for serverless room creation on GitHub Pages
+// Shared-Seed Multiplayer Service
+// Instead of real-time WebRTC, players share a Room Code that acts as a
+// deterministic SEED. The same seed generates the exact same booster packs
+// on every device, so all players draft from identical packs independently.
+// After drafting & deckbuilding, players can battle in the Match Arena.
 
-import Peer from 'peerjs';
-
-const ROOM_PREFIX = 'mtgdraft-';
-
-// Robust ICE Servers configuration for cross-network (NAT traversal)
-const PEER_CONFIG = {
-  debug: 1,
-  config: {
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-      // Free public TURN server for restrictive symmetric NATs
-      {
-        urls: 'turn:openrelay.metered.ca:80',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-      },
-      {
-        urls: 'turn:openrelay.metered.ca:443',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-      },
-      {
-        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-        username: 'openrelayproject',
-        credential: 'openrelayproject'
-      }
-    ]
-  }
-};
-
-export class MultiplayerService {
-  constructor() {
-    this.peer = null;
-    this.connections = new Map(); // peerId -> DataConnection
-    this.isHost = false;
-    this.roomCode = '';
-    this.myNickname = 'Giocatore';
-    this.onStateChangeCallbacks = [];
-  }
-
-  // Generate a random 6-character room code
-  static generateRoomCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  }
-
-  // Create a room as Host
-  createRoom(nickname, roomCode = MultiplayerService.generateRoomCode()) {
-    return new Promise((resolve, reject) => {
-      this.isHost = true;
-      this.roomCode = roomCode;
-      this.myNickname = nickname || 'Host';
-      const hostPeerId = `${ROOM_PREFIX}${roomCode.toLowerCase()}`;
-
-      this.peer = new Peer(hostPeerId, PEER_CONFIG);
-
-      this.peer.on('open', (id) => {
-        console.log('Room created as Host:', id);
-        this.notifyStateChange({
-          status: 'lobby',
-          roomCode,
-          players: [{ peerId: id, nickname: this.myNickname, isHost: true }]
-        });
-        resolve({ roomCode, peerId: id });
-      });
-
-      this.peer.on('connection', (conn) => {
-        this.handleIncomingConnection(conn);
-      });
-
-      this.peer.on('error', (err) => {
-        console.error('PeerJS Host Error:', err);
-        reject(err);
-      });
-    });
-  }
-
-  // Join a room as Client
-  joinRoom(nickname, roomCode) {
-    return new Promise((resolve, reject) => {
-      this.isHost = false;
-      this.roomCode = roomCode.trim().toUpperCase();
-      this.myNickname = nickname || 'Ospite';
-      const hostPeerId = `${ROOM_PREFIX}${this.roomCode.toLowerCase()}`;
-
-      this.peer = new Peer(PEER_CONFIG);
-
-      this.peer.on('open', (myPeerId) => {
-        const conn = this.peer.connect(hostPeerId);
-
-        conn.on('open', () => {
-          this.connections.set(hostPeerId, conn);
-          conn.send({
-            type: 'JOIN_REQUEST',
-            nickname: this.myNickname,
-            peerId: myPeerId
-          });
-          resolve({ roomCode: this.roomCode, peerId: myPeerId });
-        });
-
-        conn.on('data', (data) => {
-          this.handleIncomingData(data, conn);
-        });
-
-        conn.on('error', (err) => {
-          console.error('Connection to Host error:', err);
-          reject(err);
-        });
-      });
-
-      this.peer.on('error', (err) => {
-        console.error('PeerJS Client Error:', err);
-        reject(err);
-      });
-    });
-  }
-
-  // Handle incoming connection on Host
-  handleIncomingConnection(conn) {
-    conn.on('open', () => {
-      this.connections.set(conn.peer, conn);
-    });
-
-    conn.on('data', (data) => {
-      this.handleIncomingData(data, conn);
-    });
-
-    conn.on('close', () => {
-      this.connections.delete(conn.peer);
-      this.broadcastPlayerList();
-    });
-  }
-
-  // Handle network messages
-  handleIncomingData(data, conn) {
-    switch (data.type) {
-      case 'JOIN_REQUEST':
-        if (this.isHost) {
-          this.broadcastPlayerList();
-        }
-        break;
-
-      case 'PLAYER_LIST_UPDATE':
-      case 'STATE_UPDATE':
-        this.notifyStateChange(data.state);
-        break;
-
-      case 'GAME_ACTION':
-        this.notifyStateChange(data);
-        break;
-
-      default:
-        console.log('Received message:', data);
-    }
-  }
-
-  // Broadcast player list from Host to all connected peers
-  broadcastPlayerList() {
-    if (!this.isHost) return;
-
-    const playerList = [
-      { peerId: this.peer.id, nickname: this.myNickname, isHost: true }
-    ];
-
-    this.connections.forEach((conn, peerId) => {
-      playerList.push({
-        peerId,
-        nickname: conn.metadata?.nickname || 'Giocatore',
-        isHost: false
-      });
-    });
-
-    const statePayload = {
-      type: 'PLAYER_LIST_UPDATE',
-      state: {
-        status: 'lobby',
-        roomCode: this.roomCode,
-        players: playerList
-      }
-    };
-
-    this.broadcast(statePayload);
-    this.notifyStateChange(statePayload.state);
-  }
-
-  // Send message to all peers
-  broadcast(payload) {
-    this.connections.forEach((conn) => {
-      if (conn.open) {
-        conn.send(payload);
-      }
-    });
-  }
-
-  // Register callback for state changes
-  onStateChange(callback) {
-    this.onStateChangeCallbacks.push(callback);
-  }
-
-  notifyStateChange(newState) {
-    this.onStateChangeCallbacks.forEach((cb) => cb(newState));
-  }
-
-  // Close connections
-  disconnect() {
-    this.connections.forEach(conn => conn.close());
-    if (this.peer) this.peer.destroy();
-    this.connections.clear();
-  }
+/**
+ * Seeded pseudo-random number generator (Mulberry32).
+ * Given the same seed, it always produces the same sequence of numbers.
+ */
+export function createSeededRNG(seed) {
+  let state = hashString(seed);
+  return function () {
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-export const multiplayerInstance = new MultiplayerService();
+/**
+ * Simple string hash (DJB2) to convert a room code into a numeric seed.
+ */
+function hashString(str) {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) | 0;
+  }
+  return hash >>> 0;
+}
+
+/**
+ * Deterministic shuffle using seeded RNG (Fisher-Yates).
+ */
+export function seededShuffle(array, rng) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/**
+ * Generate a 6-character room code (human-friendly, uppercase alphanumeric).
+ */
+export function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I to avoid confusion
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
+/**
+ * Generate deterministic booster packs for ALL seats at the table.
+ * Given the same cardPool + roomCode + playerCount, every device
+ * will produce the exact same packs in the exact same order.
+ *
+ * @param {Array} cardPool - All available cards for the set
+ * @param {string} roomCode - The shared room/seed code
+ * @param {number} playerCount - Number of seats (6 or 8)
+ * @param {number} packNumber - Which pack round (1, 2, or 3)
+ * @returns {Array<Array>} - Array of packs, one per seat
+ */
+export function generateSeededPacks(cardPool, roomCode, playerCount, packNumber) {
+  // Create a unique seed per pack round
+  const seedString = `${roomCode}-PACK${packNumber}`;
+  const rng = createSeededRNG(seedString);
+
+  const mythicsAndRares = cardPool.filter(c => c.rarity === 'mythic' || c.rarity === 'rare');
+  const uncommons = cardPool.filter(c => c.rarity === 'uncommon');
+  const commons = cardPool.filter(c => c.rarity === 'common');
+
+  const allPacks = [];
+
+  for (let seat = 0; seat < playerCount; seat++) {
+    const pack = [];
+
+    // 1 Rare/Mythic
+    if (mythicsAndRares.length > 0) {
+      const idx = Math.floor(rng() * mythicsAndRares.length);
+      pack.push({ ...mythicsAndRares[idx] });
+    }
+
+    // 3 Uncommons
+    const shuffledUnc = seededShuffle(uncommons, rng);
+    const uncCount = Math.min(3, shuffledUnc.length);
+    for (let i = 0; i < uncCount; i++) {
+      pack.push({ ...shuffledUnc[i] });
+    }
+
+    // Fill rest with commons (target 15 cards per pack)
+    const needed = 15 - pack.length;
+    const shuffledCommon = seededShuffle(commons, rng);
+    for (let i = 0; i < Math.min(needed, shuffledCommon.length); i++) {
+      pack.push({ ...shuffledCommon[i] });
+    }
+
+    // Fallback: if not enough cards by rarity, fill from full pool
+    while (pack.length < 15 && cardPool.length > 0) {
+      const idx = Math.floor(rng() * cardPool.length);
+      pack.push({ ...cardPool[idx] });
+    }
+
+    // Assign unique instance IDs (deterministic)
+    pack.forEach((card, idx) => {
+      card.instanceId = `seed-${roomCode}-p${packNumber}-s${seat}-c${idx}`;
+    });
+
+    allPacks.push(pack);
+  }
+
+  return allPacks;
+}

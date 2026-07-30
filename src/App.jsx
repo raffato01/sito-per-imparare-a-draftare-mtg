@@ -20,6 +20,8 @@ export function App() {
   const [difficulty, setDifficulty] = useState('normal'); // 'easy', 'normal', 'hard'
   const [cardPool, setCardPool] = useState([]);
   const [draftedPool, setDraftedPool] = useState([]);
+  const [roomCode, setRoomCode] = useState(null); // for seeded multiplayer
+  const [seatIndex, setSeatIndex] = useState(0);  // which seat the player chose
   
   const [coachMode, setCoachMode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +33,8 @@ export function App() {
     setErrorMessage('');
     setPlayerCount(count);
     setDifficulty(diff);
+    setRoomCode(null); // solo mode, no shared seed
+    setSeatIndex(0);
 
     const presetInfo = PRESET_SETS.find(s => s.code === setCode) || {
       code: setCode,
@@ -56,9 +60,11 @@ export function App() {
     }
   };
 
-  // Start Multiplayer Draft handler
-  const handleStartMultiplayerDraft = async ({ targetSeats }) => {
-    await handleStartDraft({ setCode: 'fdn', playerCount: targetSeats, difficulty: 'normal' });
+  // Start Multiplayer Draft handler (shared seed)
+  const handleStartMultiplayerDraft = async ({ roomCode: code, seatIndex: seat, playerCount: count }) => {
+    setRoomCode(code);
+    setSeatIndex(seat);
+    await handleStartDraft({ setCode: 'fdn', playerCount: count, difficulty: 'normal' });
   };
 
   // Draft Finished handler
@@ -109,6 +115,8 @@ export function App() {
                 cardPool={cardPool}
                 coachMode={coachMode}
                 difficulty={difficulty}
+                roomCode={roomCode}
+                seatIndex={seatIndex}
                 onDraftComplete={handleDraftComplete}
                 onCancel={() => setDraftState('selector')}
                 lang={lang}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CardView } from '../Common/CardView';
 import { getCoachSuggestion, botPickCard } from '../../services/botLogic';
+import { generateSeededPacks } from '../../services/multiplayerService';
 import { TRANSLATIONS } from '../../data/translations';
 import { ArrowLeftRight, HelpCircle, Layers, ChevronUp, ChevronDown } from 'lucide-react';
 
@@ -10,6 +11,8 @@ export function DraftBoard({
   cardPool = [],
   coachMode = true,
   difficulty = 'normal',
+  roomCode = null,
+  seatIndex = 0,
   onDraftComplete,
   onCancel,
   lang = 'it'
@@ -18,7 +21,10 @@ export function DraftBoard({
   const [pickNum, setPickNum] = useState(1);
   const [humanPool, setHumanPool] = useState([]);
   
-  // Seat packs array: seat 0 is Human, seats 1..(playerCount-1) are Bots
+  // Human seat: in multiplayer mode uses seatIndex, in solo mode always 0
+  const humanSeat = roomCode ? seatIndex : 0;
+  
+  // Seat packs array: one pack per seat
   const [seatsPacks, setSeatsPacks] = useState([]);
   const [botPools, setBotPools] = useState(() => Array.from({ length: playerCount }, () => []));
   const [isPoolExpanded, setIsPoolExpanded] = useState(false);
@@ -30,16 +36,25 @@ export function DraftBoard({
   }, []);
 
   const startNewPackPhase = (targetPackNum) => {
-    const newSeatsPacks = [];
-    for (let seat = 0; seat < playerCount; seat++) {
-      newSeatsPacks.push(generatePackForSeat(targetPackNum, seat));
+    let newSeatsPacks;
+    
+    if (roomCode && cardPool.length > 0) {
+      // MULTIPLAYER: deterministic seeded packs (same on every device)
+      newSeatsPacks = generateSeededPacks(cardPool, roomCode, playerCount, targetPackNum);
+    } else {
+      // SOLO: random packs
+      newSeatsPacks = [];
+      for (let seat = 0; seat < playerCount; seat++) {
+        newSeatsPacks.push(generateRandomPack(targetPackNum, seat));
+      }
     }
+    
     setSeatsPacks(newSeatsPacks);
     setPackNum(targetPackNum);
     setPickNum(1);
   };
 
-  const generatePackForSeat = (pNum, seatIndex) => {
+  const generateRandomPack = (pNum, seat) => {
     const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
     const getRandomN = (arr, n) => {
       const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -49,28 +64,24 @@ export function DraftBoard({
     const mythicsAndRares = cardPool.filter(c => c.rarity === 'mythic' || c.rarity === 'rare');
     const uncommons = cardPool.filter(c => c.rarity === 'uncommon');
     const commons = cardPool.filter(c => c.rarity === 'common');
-    const lands = cardPool.filter(c => c.isLand || c.typeLine?.toLowerCase().includes('land'));
 
     const pack = [];
     if (mythicsAndRares.length > 0) pack.push(getRandom(mythicsAndRares));
     if (uncommons.length >= 3) pack.push(...getRandomN(uncommons, 3));
     else pack.push(...getRandomN(cardPool, 3));
 
-    const commonNeeded = 14 - pack.length;
+    const commonNeeded = 15 - pack.length;
     if (commons.length >= commonNeeded) pack.push(...getRandomN(commons, commonNeeded));
     else pack.push(...getRandomN(cardPool, commonNeeded));
 
-    if (lands.length > 0) pack.push(getRandom(lands));
-    else pack.push(getRandom(cardPool));
-
     return pack.map((c, idx) => ({
       ...c,
-      instanceId: `p${pNum}_s${seatIndex}_pick${idx}_${Math.random().toString(36).substring(2, 6)}`
+      instanceId: `p${pNum}_s${seat}_pick${idx}_${Math.random().toString(36).substring(2, 6)}`
     }));
   };
 
-  // Active pack facing Human player (Seat 0)
-  const currentPack = seatsPacks[0] || [];
+  // Active pack facing Human player (at humanSeat)
+  const currentPack = seatsPacks[humanSeat] || [];
 
   // Coach recommendation for Human player
   const coachAdvice = coachMode && currentPack.length > 0
@@ -82,11 +93,11 @@ export function DraftBoard({
     const nextHumanPool = [...humanPool, chosenCard];
     setHumanPool(nextHumanPool);
 
-    // Simulate Bot Picks for seats 1 to playerCount-1 using selected difficulty
+    // Simulate Bot Picks for all seats except humanSeat
     const nextBotPools = [...botPools];
 
     const updatedPacks = seatsPacks.map((pack, seatIdx) => {
-      if (seatIdx === 0) {
+      if (seatIdx === humanSeat) {
         return pack.filter(c => c.instanceId !== chosenCard.instanceId);
       } else {
         if (pack.length === 0) return [];
@@ -102,7 +113,7 @@ export function DraftBoard({
     const passLeft = packNum % 2 === 1;
     const rotatedPacks = rotatePacks(updatedPacks, passLeft);
 
-    const remainingCardsInPack = rotatedPacks[0]?.length || 0;
+    const remainingCardsInPack = rotatedPacks[humanSeat]?.length || 0;
 
     if (remainingCardsInPack > 0) {
       setSeatsPacks(rotatedPacks);
@@ -185,7 +196,7 @@ export function DraftBoard({
       <div className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3">
         <div className="flex items-center justify-between overflow-x-auto pb-1 gap-2">
           {Array.from({ length: playerCount }).map((_, idx) => {
-            const isHuman = idx === 0;
+            const isHuman = idx === humanSeat;
             return (
               <div
                 key={idx}
