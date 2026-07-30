@@ -15,18 +15,6 @@ export const TUTORIAL_LESSONS = [
     },
     icon: 'Sparkles',
     badge: 'Fase Iniziale',
-    content: `
-Il **Draft** è un formato "Limited" di Magic: The Gathering. A differenza del formato Constructed (dove ciascun giocatore porta un mazzo già pronto da casa), nel Draft tutti i giocatori partono **sullo stesso piano** aprendo bustine sigillate sul momento.
-
-### Come funziona un tavolo da 8 (o 6) giocatori:
-- Ciascun giocatore riceve **3 bustine**.
-- Si apre la **prima bustina**, si sceglie **1 carta** a testa e si passa il resto della bustina al giocatore alla propria **sinistra**.
-- Si ripetono le scelte finché la prima bustina non è terminata.
-- Si apre la **seconda bustina** e le carte girano verso **destra**!
-- Infine si apre la **terza bustina** e le carte tornano a girare verso **sinistra**.
-
-Alla fine del Draft avrai raccolto **42 o 45 carte**. Da questa collezione costruirai un mazzo di almeno **40 carte** (comprese le Terre base che ti verranno fornite).
-    `,
     contents: {
       it: `
 Il **Draft** è un formato "Limited" di Magic: The Gathering. A differenza del formato Constructed (dove ciascun giocatore porta un mazzo già pronto da casa), nel Draft tutti i giocatori partono **sullo stesso piano** aprendo bustine sigillate sul momento.
@@ -53,12 +41,6 @@ Alla fine del Draft avrai raccolto **42 o 45 carte**. Da questa collezione costr
 At the end of the draft you will have drafted **42 or 45 cards**. From this card pool you will build a deck of at least **40 cards** (including basic lands).
       `
     },
-    highlights: [
-      '3 Bustine da 15 carte per giocatore',
-      'Mazzo finale di almeno 40 carte (non 60)',
-      'Circa 17 Terre e 23 Carte nel mazzo finale',
-      'Non possiedi già il mazzo: lo crei al momento!'
-    ],
     highlightList: {
       it: [
         '3 Bustine da 15 carte per giocatore',
@@ -108,13 +90,6 @@ When opening a 15-card pack, how do you decide which card is best? Magic pro pla
 - **D - DIRT / DREGS** 🗑️: Weak or situational cards that usually end up in your sideboard.
       `
     },
-    highlights: [
-      'B = Bombs (Devastanti)',
-      'R = Removal (Fondamentali per la vittoria)',
-      'E = Evasion (Creature che volano o non si bloccano)',
-      'A = Aggro/Abilities (Creature solide in curva)',
-      'D = Dregs (Carte da evitare)'
-    ],
     highlightList: {
       it: [
         'B = Bombs (Devastanti)',
@@ -248,6 +223,129 @@ If you move into an open color, you will be heavily rewarded in Pack 2 and Pack 
         'Moving into an "open" color rewards you later',
         'Always play a 2-Color deck (not 1, not 3)'
       ]
+    }
+  }
+];
+
+// Set Ratings, Speed & Top Archetypes Data for Set Guides
+export const SET_GUIDES = [
+  {
+    code: 'fdn',
+    name: 'Foundations (FDN)',
+    difficulty: 'Principiante',
+    speed: 'Medio (Sinergico)',
+    rating: 'S-Tier (Ideale per Imparare)',
+    ratings: {
+      it: 'S-Tier (Set Perfetto per Iniziare)',
+      en: 'S-Tier (Perfect Beginner Set)'
+    },
+    description: {
+      it: 'Foundations è il set ideale per fare pratica. Le meccaniche sono chiare e i 10 archetipi bicolore sono ben bilanciati.',
+      en: 'Foundations is the ideal set for practice. Mechanics are straightforward and the 10 color pairs are well balanced.'
+    },
+    topArchetypes: [
+      {
+        pair: 'R-W (Boros Aggro)',
+        desc: {
+          it: 'Aggro velocissimo basato su creature a basso costo e magie di rimozione dirette (Danni & Sparatutto).',
+          en: 'Super fast aggro with low-cost creatures and direct burn spells.'
+        }
+      },
+      {
+        pair: 'U-B (Dimir Control)',
+        desc: {
+          it: 'Controllo basato su magie di rimozione nere, peschini blu e creature con evasione (Volare).',
+          en: 'Control deck with black removal, blue card draw, and flying win conditions.'
+        }
+      },
+      {
+        pair: 'G-W (Selesnya Tokens)',
+        desc: {
+          it: 'Creazione di pedine creatura e potenziamenti di massa per travolgere l\'avversario.',
+          en: 'Token generation and team pump spells to overwhelm opponents.'
+        }
+      }
+    ],
+    proTip: {
+      it: 'In Foundations, assicurati di avere almeno 5-6 creature a costo 2 mana per non subire l\'aggressività di Boros!',
+      en: 'In Foundations, make sure you draft at least 5-6 two-drop creatures to survive early aggression!'
+    }
+  },
+  {
+    code: 'blb',
+    name: 'Bloomburrow (BLB)',
+    difficulty: 'Medio',
+    speed: 'Veloce (Molto Sinergico)',
+    rating: 'A-Tier (Molto Divertente)',
+    ratings: {
+      it: 'A-Tier (Set basato su Tribù & Sinergie)',
+      en: 'A-Tier (Tribal Synergy Focused)'
+    },
+    description: {
+      it: 'Bloomburrow ruota attorno alle tribù animali. Scegliere la tribù giusta nel tuo colore principale è la chiave per vincere.',
+      en: 'Bloomburrow revolves around animal tribes. Synergizing with your main color tribe is key to victory.'
+    },
+    topArchetypes: [
+      {
+        pair: 'W-B (Orzhov Pipistrelli / Lifegain)',
+        desc: {
+          it: 'Volanti con abilità legate al guadagno e perdita di punti vita nello stesso turno.',
+          en: 'Flyers triggering bonus effects when gaining or losing life each turn.'
+        }
+      },
+      {
+        pair: 'R-G (Gruul Rprocioni / Foraggiare)',
+        desc: {
+          it: 'Creature enormi e meccanica Foraggiare per spendere mana ed attivare effetti devastanti.',
+          en: 'Huge creatures and Expend mechanic rewarding you for spending mana.'
+        }
+      },
+      {
+        pair: 'U-R (Izzet Lontre / Spellslinger)',
+        desc: {
+          it: 'Lontre veloci che prendono +1/+1 ogni volta che lanci un istantaneo o stregoneria.',
+          en: 'Fast Otters getting buffed whenever you cast instant or sorcery spells.'
+        }
+      }
+    ],
+    proTip: {
+      it: 'Non mischiare troppe tribù diverse! Se giochi Topolini (R/W), resta focalizzato su equipaggiamenti e attacco.',
+      en: 'Don\'t mix too many tribes! If drafting Mice (R/W), stay focused on equipment and heroic-style attacks.'
+    }
+  },
+  {
+    code: 'mh3',
+    name: 'Modern Horizons 3 (MH3)',
+    difficulty: 'Avanzato',
+    speed: 'Alto Livello di Potenza',
+    rating: 'S-Tier (Complesso & Entusiasmante)',
+    ratings: {
+      it: 'S-Tier (Set Complesso per Giocatori Esperti)',
+      en: 'S-Tier (Complex High-Power Set)'
+    },
+    description: {
+      it: 'Set ad altissima potenza con Eldrazi giganti, carte bifaccia (TDFC) ed energie. Richiede una grande conoscenza delle interazioni.',
+      en: 'High power level set featuring massive Eldrazi, modal double-faced cards, and Energy synergies.'
+    },
+    topArchetypes: [
+      {
+        pair: 'G-U-C (Eldrazi Ramp / Colorless)',
+        desc: {
+          it: 'Genera scioni/spawn Eldrazi per lanciare minacce incolori colossali a costo 7+ mana.',
+          en: 'Ramp Eldrazi spawns to hardcast devastating 7+ CMC colorless titans.'
+        }
+      },
+      {
+        pair: 'R-W (Boros Energy Aggro)',
+        desc: {
+          it: 'Accumula segnalini Energia per potenziare le tue creature e lanciare rimozioni a basso costo.',
+          en: 'Accumulate Energy counters to power up low-cost aggressive attackers.'
+        }
+      }
+    ],
+    proTip: {
+      it: 'Le terre incolori e il Mana Fixing sono fondamentali in MH3: prendi le terre bicolore nei primi pick!',
+      en: 'Dual lands and mana fixing are premium in MH3: pick dual lands early in pack 1 & 2!'
     }
   }
 ];

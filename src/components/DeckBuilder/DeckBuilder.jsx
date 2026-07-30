@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { BASIC_LANDS } from '../../data/presetSets';
+import { buildSmartDeck, analyzeUserDeck } from '../../services/deckCoachLogic';
 import confetti from 'canvas-confetti';
-import { Sparkles, Layers, Plus, Minus, Download, ClipboardCopy, Check, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Layers, Plus, Minus, Download, ClipboardCopy, Check, CheckCircle2, Bot, Wand2 } from 'lucide-react';
 
 export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
   const [maindeck, setMaindeck] = useState([]);
   const [sideboard, setSideboard] = useState([]);
   const [landCounts, setLandCounts] = useState({ W: 0, U: 0, B: 0, R: 0, G: 0 });
   const [copiedArena, setCopiedArena] = useState(false);
+  const [coachAnalysis, setCoachAnalysis] = useState(null);
 
   const isIT = lang === 'it';
 
@@ -17,6 +19,26 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
       setMaindeck([]);
     }
   }, [draftedPool]);
+
+  // Update live coach evaluation when deck changes
+  useEffect(() => {
+    if (maindeck.length > 0) {
+      const evaluation = analyzeUserDeck(maindeck, landCounts, lang);
+      setCoachAnalysis(evaluation);
+    } else {
+      setCoachAnalysis(null);
+    }
+  }, [maindeck, landCounts, lang]);
+
+  // Smart Auto-Build Deck with Coach Assistant
+  const handleAutoBuildDeck = () => {
+    if (!draftedPool || draftedPool.length === 0) return;
+    const result = buildSmartDeck(draftedPool, lang);
+    setMaindeck(result.maindeckSpells);
+    setSideboard(result.sideboardSpells);
+    setLandCounts(result.landCounts);
+    confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
+  };
 
   const moveToMaindeck = (card) => {
     setSideboard(prev => prev.filter(c => c.instanceId !== card.instanceId));
@@ -146,29 +168,40 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
       
       {/* Header */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl space-y-4">
-        <div>
-          <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider">
-            <Sparkles size={16} />
-            <span>{isIT ? 'Fase Finale — Deckbuilding' : 'Final Phase — Deckbuilding'}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-amber-400 font-extrabold text-xs uppercase tracking-wider">
+              <Sparkles size={16} />
+              <span>{isIT ? 'Fase Finale — Deckbuilding Assistito' : 'Final Phase — Assisted Deckbuilding'}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
+              {isIT ? 'Costruisci il Mazzo da 40 Carte' : 'Build your 40-Card Deck'}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              {isIT
+                ? 'Sposta le carte dal Pool al Mazzo, oppure lascia che il Coach crei il mazzo ideale per te!'
+                : 'Move cards from Pool to Deck, or let the Coach build the optimal deck for you!'}
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
-            {isIT ? 'Costruisci il Mazzo da 40 Carte' : 'Build your 40-Card Deck'}
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            {isIT
-              ? 'Sposta le carte dal Pool al Mazzo, poi calcola le terre.'
-              : 'Move cards from Pool to Deck, then calculate lands.'}
-          </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={autoAddLands}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg flex items-center gap-2 transition-all active:scale-95"
-          >
-            <Sparkles size={15} />
-            <span>{isIT ? 'CALCOLA TERRE' : 'AUTO LANDS'}</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* SMART AUTO-BUILD COACH BUTTON */}
+            <button
+              onClick={handleAutoBuildDeck}
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 transform hover:scale-105 active:scale-95 transition-all"
+            >
+              <Wand2 size={16} />
+              <span>{isIT ? '✨ ASSISTENTE COACH: COSTRUISCI MAZZO IDEALE' : '✨ COACH ASSISTANT: BUILD OPTIMAL DECK'}</span>
+            </button>
+
+            <button
+              onClick={autoAddLands}
+              className="px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs sm:text-sm border border-slate-700 flex items-center gap-2 transition-colors active:scale-95"
+            >
+              <Sparkles size={15} />
+              <span>{isIT ? 'CALCOLA TERRE' : 'AUTO LANDS'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -203,7 +236,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
         {maindeck.length > 0 && (
           <details className="group">
             <summary className="text-[11px] text-indigo-400 font-bold cursor-pointer hover:text-indigo-300">
-              {isIT ? '📋 Anteprima lista...' : '📋 Preview list...'}
+              {isIT ? '📋 Anteprima lista Arena...' : '📋 Preview Arena list...'}
             </summary>
             <pre className="mt-2 p-3 bg-slate-950 border border-slate-800 rounded-xl text-[10px] sm:text-[11px] text-slate-300 font-mono max-h-40 overflow-y-auto whitespace-pre-wrap">
               {buildArenaText()}
@@ -215,7 +248,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
       {/* Stats & Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
-        {/* Left: Stats */}
+        {/* Left: Stats & Coach Analysis */}
         <div className="lg:col-span-5 space-y-5">
           
           {/* Deck Counter */}
@@ -292,29 +325,24 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
             </div>
           </div>
 
-          {/* Coach Evaluation */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2 shadow-xl">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
-              <CheckCircle2 size={16} />
-              <span>{isIT ? 'VALUTAZIONE COACH:' : 'COACH EVALUATION:'}</span>
+          {/* Detailed Coach Evaluation Feedback */}
+          {coachAnalysis && (
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
+                <Bot size={18} className="text-amber-400" />
+                <span>{isIT ? 'ANALISI COACH MAZZO:' : 'DECK COACH ANALYSIS:'}</span>
+              </div>
+
+              <div className="space-y-2">
+                {coachAnalysis.tips.map((tip, idx) => (
+                  <div key={idx} className="p-2.5 bg-slate-950/80 rounded-xl border border-slate-800 text-[11px] leading-relaxed text-slate-200">
+                    {tip.text}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-xs text-slate-300">
-              {totalDeckCards === 40 ? (
-                <p className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-[11px]">
-                  🎉 <strong>{isIT ? 'Mazzo Completo!' : 'Deck Complete!'}</strong>{' '}
-                  {isIT ? 'Pronto per la partita.' : 'Ready to play.'}
-                </p>
-              ) : totalDeckCards < 40 ? (
-                <p className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 text-[11px]">
-                  ⚠️ {totalDeckCards}/40 — {isIT ? `Aggiungi ${40 - totalDeckCards} carte.` : `Add ${40 - totalDeckCards} more.`}
-                </p>
-              ) : (
-                <p className="p-2.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-[11px]">
-                  ⚠️ {totalDeckCards}/40 — {isIT ? 'Troppe carte! Rimuovine alcune.' : 'Too many cards! Remove some.'}
-                </p>
-              )}
-            </div>
-          </div>
+          )}
+
         </div>
 
         {/* Right: Card Lists */}
@@ -332,7 +360,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
 
             {maindeck.length === 0 ? (
               <div className="text-center py-8 text-slate-500 border border-dashed border-slate-800 rounded-xl text-xs">
-                {isIT ? 'Mazzo vuoto. Aggiungi carte dal Pool!' : 'Empty deck. Add cards from Pool!'}
+                {isIT ? 'Mazzo vuoto. Clicca su "Costruisci Mazzo Ideale" o aggiungi carte dal Pool!' : 'Empty deck. Click "Build Optimal Deck" or add cards from Pool!'}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-80 overflow-y-auto pr-1">

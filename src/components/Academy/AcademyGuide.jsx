@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { TUTORIAL_LESSONS, GLOSSARY } from '../../data/tutorialData';
+import { TUTORIAL_LESSONS, SET_GUIDES, GLOSSARY } from '../../data/tutorialData';
 import { TRANSLATIONS } from '../../data/translations';
-import { BookOpen, Sparkles, Award, Layers, BarChart2, Compass, Play, ChevronRight, CheckCircle } from 'lucide-react';
+import { BookOpen, Sparkles, Award, Layers, BarChart2, Compass, Play, ChevronRight, CheckCircle, Flame, Star } from 'lucide-react';
 
-/**
- * Lightweight Markdown-to-JSX parser
- */
 function renderMarkdown(text) {
   if (!text) return null;
 
@@ -94,9 +91,12 @@ function renderMarkdown(text) {
 
 export function AcademyGuide({ onStartDraft, lang = 'it' }) {
   const [activeLessonId, setActiveLessonId] = useState('intro');
+  const [selectedSetCode, setSelectedSetCode] = useState('fdn');
   const t = TRANSLATIONS[lang] || TRANSLATIONS.it;
+  const isIT = lang === 'it';
 
   const activeLesson = TUTORIAL_LESSONS.find(l => l.id === activeLessonId) || TUTORIAL_LESSONS[0];
+  const activeSetGuide = SET_GUIDES.find(s => s.code === selectedSetCode) || SET_GUIDES[0];
 
   const getIcon = (iconName) => {
     switch (iconName) {
@@ -131,7 +131,7 @@ export function AcademyGuide({ onStartDraft, lang = 'it' }) {
           <div className="pt-2 flex flex-wrap gap-4">
             <button
               onClick={onStartDraft}
-              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-amber-500/20 flex items-center gap-2 transform hover:-translate-y-0.5 transition-all"
+              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-amber-500/20 flex items-center gap-2 transform hover:-translate-y-0.5 transition-all active:scale-95"
             >
               <Play size={18} fill="currentColor" />
               <span>{t.btnStartDraft}</span>
@@ -211,26 +211,111 @@ export function AcademyGuide({ onStartDraft, lang = 'it' }) {
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
 
+      </div>
+
+      {/* NEW SECTION: Set Ratings & Archetypes Guides */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl mt-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <div className="inline-flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <Star size={16} className="text-amber-400" />
+              <span>{isIT ? 'GUIDA AI SET & ARCHETIPI' : 'SET RATINGS & ARCHETYPES'}</span>
+            </div>
+            <h3 className="text-2xl font-extrabold text-white">
+              {isIT ? 'Punteggi Set & Guida alle Strategie' : 'Set Ratings & Synergy Guides'}
+            </h3>
           </div>
 
-          {/* MTG Glossary */}
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 space-y-4">
-            <h4 className="font-extrabold text-base text-slate-200 flex items-center gap-2">
-              <span>{t.glossaryTitle}</span>
+          {/* Set Selector Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {SET_GUIDES.map((sg) => (
+              <button
+                key={sg.code}
+                onClick={() => setSelectedSetCode(sg.code)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                  selectedSetCode === sg.code
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-inner'
+                    : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                }`}
+              >
+                {sg.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Selected Set Details Card */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
+              <span className="text-[10px] text-slate-400 font-bold uppercase block">{isIT ? 'Valutazione Set' : 'Set Rating'}</span>
+              <span className="text-base font-black text-amber-400">{activeSetGuide.ratings[lang]}</span>
+            </div>
+            <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
+              <span className="text-[10px] text-slate-400 font-bold uppercase block">{isIT ? 'Velocità Formato' : 'Format Speed'}</span>
+              <span className="text-base font-black text-rose-400">{activeSetGuide.speed}</span>
+            </div>
+            <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
+              <span className="text-[10px] text-slate-400 font-bold uppercase block">{isIT ? 'Difficoltà Draft' : 'Draft Difficulty'}</span>
+              <span className="text-base font-black text-emerald-400">{activeSetGuide.difficulty}</span>
+            </div>
+          </div>
+
+          <p className="text-sm text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+            {activeSetGuide.description[lang]}
+          </p>
+
+          {/* Top Archetypes Grid */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-black tracking-wider text-slate-400 uppercase flex items-center gap-2">
+              <Flame size={16} className="text-rose-400" />
+              <span>{isIT ? 'Migliori Archetipi da Draftare:' : 'Top Draft Archetypes:'}</span>
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {GLOSSARY.map((g, idx) => (
-                <div key={idx} className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs">
-                  <span className="font-bold text-amber-400 block mb-0.5">{g.term}</span>
-                  <span className="text-slate-300">{g.descs ? g.descs[lang] : g.desc}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {activeSetGuide.topArchetypes.map((arch, idx) => (
+                <div key={idx} className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-2">
+                  <div className="flex items-center gap-2 text-amber-400 font-extrabold text-sm">
+                    <span className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
+                      {idx + 1}
+                    </span>
+                    <span>{arch.pair}</span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {arch.desc[lang]}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Pro Tip Box */}
+          <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-200 text-xs sm:text-sm font-medium flex items-start gap-3">
+            <Sparkles size={18} className="text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="block text-amber-300 font-bold mb-0.5">{isIT ? 'Consiglio da Pro-Player:' : 'Pro Player Tip:'}</strong>
+              <span>{activeSetGuide.proTip[lang]}</span>
+            </div>
+          </div>
         </div>
 
+      </div>
+
+      {/* MTG Glossary */}
+      <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 space-y-4">
+        <h4 className="font-extrabold text-base text-slate-200 flex items-center gap-2">
+          <span>{t.glossaryTitle}</span>
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {GLOSSARY.map((g, idx) => (
+            <div key={idx} className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs">
+              <span className="font-bold text-amber-400 block mb-0.5">{g.term}</span>
+              <span className="text-slate-300">{g.descs ? g.descs[lang] : g.desc}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
     </div>
