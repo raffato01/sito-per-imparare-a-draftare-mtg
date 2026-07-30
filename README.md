@@ -4,7 +4,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8.0-purple.svg)](https://vitejs.dev/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.0-sky.svg)](https://tailwindcss.com/)
 [![Scryfall API](https://img.shields.io/badge/API-Scryfall-red.svg)](https://scryfall.com/docs/api)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 
 Un'applicazione web moderna, interattiva ed intuitiva sviluppata in italiano per insegnare il formato **Draft di Magic: The Gathering** attraverso lezioni teoriche guidate, un simulatore di draft a 6 o 8 giocatori con intelligenza artificiale per i bot, assistente coach in tempo reale e un deckbuilder guidato con calcolo automatico delle terre.
 
