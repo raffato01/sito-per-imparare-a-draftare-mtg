@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTG Draft Academy — Impara il Draft di Magic: The Gathering</title>
+    <meta name="description" content="Sito interattivo in italiano con simulatore di draft a 6 e 8 giocatori per imparare a draftare su Magic: The Gathering, guida alla curva di mana e deck building assistito." />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Outfit', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
