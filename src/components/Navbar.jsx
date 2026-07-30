@@ -1,7 +1,7 @@
 import React from 'react';
-import { BookOpen, Sparkles, Layers, HelpCircle } from 'lucide-react';
+import { BookOpen, Sparkles, Layers, Users, Swords, HelpCircle } from 'lucide-react';
 
-export function Navbar({ activeTab, setActiveTab, selectedSet, coachMode, setCoachMode }) {
+export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -25,34 +25,46 @@ export function Navbar({ activeTab, setActiveTab, selectedSet, coachMode, setCoa
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex items-center gap-1 sm:gap-2">
+        <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1">
           <button
             onClick={() => setActiveTab('academy')}
-            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
               activeTab === 'academy'
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-inner'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
             <BookOpen size={16} />
-            <span>Guida Draft</span>
+            <span>Guida</span>
           </button>
 
           <button
             onClick={() => setActiveTab('simulator')}
-            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
               activeTab === 'simulator'
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-inner'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
             <Sparkles size={16} />
-            <span>Simulatore Draft</span>
+            <span>Solo Draft</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('multiplayer')}
+            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
+              activeTab === 'multiplayer'
+                ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-inner'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Users size={16} />
+            <span>Stanza Amici 👥</span>
           </button>
 
           <button
             onClick={() => setActiveTab('deckbuilder')}
-            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
               activeTab === 'deckbuilder'
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-inner'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
@@ -61,10 +73,22 @@ export function Navbar({ activeTab, setActiveTab, selectedSet, coachMode, setCoa
             <Layers size={16} />
             <span>Deck Builder</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('match')}
+            className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
+              activeTab === 'match'
+                ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-inner'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+            }`}
+          >
+            <Swords size={16} />
+            <span>Match 1v1 ⚔️</span>
+          </button>
         </nav>
 
         {/* Coach Mode Toggle */}
-        <div className="flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <button
             onClick={() => setCoachMode(!coachMode)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
@@ -75,8 +99,7 @@ export function Navbar({ activeTab, setActiveTab, selectedSet, coachMode, setCoa
             title="Attiva/Disattiva i consigli di pick in tempo reale"
           >
             <HelpCircle size={14} className={coachMode ? 'animate-bounce text-emerald-400' : ''} />
-            <span className="hidden md:inline">Coach Assistant:</span>
-            <span>{coachMode ? 'ATTIVO 💡' : 'OFF'}</span>
+            <span>Coach: {coachMode ? 'ATTIVO 💡' : 'OFF'}</span>
           </button>
         </div>
 

@@ -4,12 +4,14 @@ import { AcademyGuide } from './components/Academy/AcademyGuide';
 import { SetSelector } from './components/Draft/SetSelector';
 import { DraftBoard } from './components/Draft/DraftBoard';
 import { DeckBuilder } from './components/DeckBuilder/DeckBuilder';
+import { MultiplayerLobby } from './components/Draft/MultiplayerLobby';
+import { MatchArena } from './components/Match/MatchArena';
 import { fetchSetCardPool } from './services/scryfallApi';
 import { SAMPLE_CARD_POOLS } from './data/sampleCardPool';
 import { PRESET_SETS } from './data/presetSets';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState('academy'); // 'academy', 'simulator', 'deckbuilder'
+  const [activeTab, setActiveTab] = useState('academy'); // 'academy', 'simulator', 'multiplayer', 'deckbuilder', 'match'
   const [draftState, setDraftState] = useState('selector'); // 'selector', 'drafting', 'complete'
   
   const [selectedSetInfo, setSelectedSetInfo] = useState(null);
@@ -21,7 +23,7 @@ export function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Start Draft handler
+  // Start Solo Draft handler
   const handleStartDraft = async ({ setCode, playerCount: count }) => {
     setIsLoading(true);
     setErrorMessage('');
@@ -35,17 +37,13 @@ export function App() {
     setSelectedSetInfo(presetInfo);
 
     try {
-      // Fetch cards from Scryfall API
       let cards = await fetchSetCardPool(setCode);
-      if (!cards || cards.length < 15) {
-        throw new Error('Poche carte trovate per questo set.');
-      }
+      if (!cards || cards.length < 15) throw new Error('Poche carte trovate.');
       setCardPool(cards);
       setDraftState('drafting');
       setActiveTab('simulator');
     } catch (err) {
-      console.warn('Scryfall fetch failed or offline mode. Using preset pool fallback.', err);
-      // Fallback offline pool
+      console.warn('Scryfall fetch fallback pool used', err);
       const fallbackCards = SAMPLE_CARD_POOLS[setCode] || SAMPLE_CARD_POOLS.fdn;
       setCardPool(fallbackCards);
       setDraftState('drafting');
@@ -53,6 +51,11 @@ export function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Start Multiplayer Draft handler
+  const handleStartMultiplayerDraft = async ({ targetSeats }) => {
+    await handleStartDraft({ setCode: 'fdn', playerCount: targetSeats });
   };
 
   // Draft Finished handler
@@ -103,10 +106,25 @@ export function App() {
           </>
         )}
 
+        {activeTab === 'multiplayer' && (
+          <MultiplayerLobby
+            onStartMultiplayerDraft={handleStartMultiplayerDraft}
+            onCancel={() => setActiveTab('simulator')}
+          />
+        )}
+
         {activeTab === 'deckbuilder' && (
           <DeckBuilder
             draftedPool={draftedPool}
             onResetDraft={() => setDraftState('selector')}
+          />
+        )}
+
+        {activeTab === 'match' && (
+          <MatchArena
+            maindeck={draftedPool}
+            playerNickname="Tu"
+            opponentNickname="Amico"
           />
         )}
       </main>
