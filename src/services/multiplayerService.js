@@ -1,11 +1,8 @@
-// MQTT-backed Realtime Multiplayer Service for Serverless Room Lobby & Live Sync
+// Realtime MQTT WebSocket Multiplayer Service for Serverless Room Lobby & Live Sync
 import mqtt from 'mqtt';
 
-const BROKERS = [
-  'wss://broker.emqx.io:8084/mqtt',
-  'wss://broker.hivemq.com:8884/mqtt',
-  'wss://test.mosquitto.org:8081/mqtt'
-];
+// Primary MQTT WebSocket Broker (reliable, fast, SSL encrypted)
+const PRIMARY_BROKER = 'wss://broker.emqx.io:8084/mqtt';
 
 /**
  * Seeded pseudo-random number generator (Mulberry32).
@@ -118,7 +115,7 @@ class RealtimeMultiplayerService {
       this.leaveRoom();
 
       this.roomCode = roomCode.toUpperCase().trim();
-      this.topic = `mtgdraft/rooms/${this.roomCode}`;
+      this.topic = `mtgdraft/v2/rooms/${this.roomCode}`;
       this.myNickname = nickname || (isHost ? 'Host' : 'Giocatore');
       this.isHost = isHost;
       this.seatIndex = seatIndex;
@@ -132,19 +129,18 @@ class RealtimeMultiplayerService {
         lastSeen: Date.now()
       });
 
-      const brokerUrl = BROKERS[Math.floor(Math.random() * BROKERS.length)];
-      console.log(`Connecting to room ${this.roomCode} via ${brokerUrl}...`);
+      console.log(`Connecting to room ${this.roomCode} via ${PRIMARY_BROKER}...`);
 
-      this.client = mqtt.connect(brokerUrl, {
-        clientId: `client_${this.myPlayerId}`,
-        keepalive: 30,
-        reconnectPeriod: 2000,
+      this.client = mqtt.connect(PRIMARY_BROKER, {
+        clientId: `client_${this.myPlayerId}_${Math.random().toString(36).substring(2, 5)}`,
+        keepalive: 20,
+        reconnectPeriod: 1000,
         clean: true
       });
 
       this.client.on('connect', () => {
         console.log(`Connected to MQTT broker! Subscribing to ${this.topic}...`);
-        this.client.subscribe(this.topic, (err) => {
+        this.client.subscribe(this.topic, { qos: 1 }, (err) => {
           if (err) {
             console.error('Subscription error:', err);
             reject(err);
@@ -174,12 +170,12 @@ class RealtimeMultiplayerService {
     });
   }
 
-  // Broadcast presence heartbeat every 2 seconds
+  // Broadcast presence heartbeat every 1.5 seconds
   startPresenceHeartbeat() {
     this.stopPresenceHeartbeat();
     this.heartbeatTimer = setInterval(() => {
       this.broadcastPresence();
-    }, 2000);
+    }, 1500);
   }
 
   stopPresenceHeartbeat() {
@@ -187,14 +183,14 @@ class RealtimeMultiplayerService {
     this.heartbeatTimer = null;
   }
 
-  // Cleanup stale players missing for > 6 seconds
+  // Cleanup stale players missing for > 5 seconds
   startStaleCleanup() {
     if (this.cleanupTimer) clearInterval(this.cleanupTimer);
     this.cleanupTimer = setInterval(() => {
       const now = Date.now();
       let changed = false;
       this.connectedPlayers.forEach((player, id) => {
-        if (id !== this.myPlayerId && now - player.lastSeen > 6000) {
+        if (id !== this.myPlayerId && now - player.lastSeen > 5000) {
           this.connectedPlayers.delete(id);
           changed = true;
         }
@@ -202,7 +198,7 @@ class RealtimeMultiplayerService {
       if (changed) {
         this.notifyStateListeners();
       }
-    }, 2000);
+    }, 1500);
   }
 
   broadcastPresence() {
@@ -223,7 +219,6 @@ class RealtimeMultiplayerService {
     if (nickname !== undefined) this.myNickname = nickname;
     if (seatIndex !== undefined) this.seatIndex = seatIndex;
     
-    // Update local state
     const me = this.connectedPlayers.get(this.myPlayerId);
     if (me) {
       me.nickname = this.myNickname;
@@ -246,7 +241,8 @@ class RealtimeMultiplayerService {
       players: playersList,
       timestamp: Date.now()
     };
-    this.client.publish(this.topic, JSON.stringify(payload));
+    console.log('Publishing START_DRAFT event to topic:', this.topic, payload);
+    this.client.publish(this.topic, JSON.stringify(payload), { qos: 1 });
   }
 
   handleIncomingMessage(data) {
@@ -262,6 +258,7 @@ class RealtimeMultiplayerService {
       });
       this.notifyStateListeners();
     } else if (data.type === 'START_DRAFT') {
+      console.log('Received START_DRAFT signal:', data);
       this.notifyGameStartListeners(data);
     } else if (data.type === 'LEAVE') {
       this.connectedPlayers.delete(data.playerId);
@@ -271,7 +268,6 @@ class RealtimeMultiplayerService {
 
   onStateChange(callback) {
     this.stateListeners.push(callback);
-    // Trigger immediately with current state
     callback(Array.from(this.connectedPlayers.values()));
     return () => {
       this.stateListeners = this.stateListeners.filter(cb => cb !== callback);

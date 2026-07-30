@@ -27,12 +27,15 @@ export function MultiplayerLobby({ onStartMultiplayerDraft, onCancel, lang = 'it
     });
 
     const unsubStart = realtimeMultiplayerInstance.onGameStart((data) => {
-      // Game start signal received from Host!
+      console.log('START_DRAFT signal received by client:', data);
+      const mySeat = realtimeMultiplayerInstance.seatIndex;
+      const myNick = realtimeMultiplayerInstance.myNickname;
+      
       onStartMultiplayerDraft({
         roomCode: data.roomCode,
-        seatIndex,
+        seatIndex: mySeat,
         playerCount: data.playerCount || 8,
-        nickname
+        nickname: myNick
       });
     });
 
@@ -40,7 +43,7 @@ export function MultiplayerLobby({ onStartMultiplayerDraft, onCancel, lang = 'it
       unsubState();
       unsubStart();
     };
-  }, [seatIndex, nickname, onStartMultiplayerDraft]);
+  }, [onStartMultiplayerDraft]);
 
   // Create room as Host
   const handleCreateRoom = async () => {
