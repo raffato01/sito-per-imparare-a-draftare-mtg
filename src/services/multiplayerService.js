@@ -218,7 +218,7 @@ class RealtimeMultiplayerService {
   updateMyInfo({ nickname, seatIndex }) {
     if (nickname !== undefined) this.myNickname = nickname;
     if (seatIndex !== undefined) this.seatIndex = seatIndex;
-    
+
     const me = this.connectedPlayers.get(this.myPlayerId);
     if (me) {
       me.nickname = this.myNickname;
@@ -309,3 +309,4 @@ class RealtimeMultiplayerService {
 }
 
 export const realtimeMultiplayerInstance = new RealtimeMultiplayerService();
+o 

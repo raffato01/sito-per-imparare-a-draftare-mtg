@@ -108,12 +108,81 @@ When opening a 15-card pack, how do you decide which card is best? Magic pro pla
     }
   },
   {
+    id: 'modern_eval',
+    title: '3. Oltre B.R.E.A.D.: 17Lands & Teoria dei Quadranti',
+    subtitle: 'La valutazione moderna usata dai Pro-Player attuali',
+    titles: {
+      it: '3. Oltre B.R.E.A.D.: 17Lands & Teoria dei Quadranti',
+      en: '3. Beyond B.R.E.A.D.: 17Lands & Quadrant Theory'
+    },
+    subtitles: {
+      it: 'La valutazione moderna usata dai Pro-Player attuali',
+      en: 'Modern evaluation frameworks used by current Pros'
+    },
+    icon: 'BarChart2',
+    badge: 'Valutazione Avanzata',
+    contents: {
+      it: `
+La regola B.R.E.A.D. è stata inventata oltre 20 anni fa. Nel Magic moderno le carte sono molto più veloci e sinergiche! I pro-player attuali usano due strumenti avanzati:
+
+### 1. I Dati di 17Lands.com (GIH WR% & Lettere A/B/C/D/F):
+*17Lands* traccia milioni di partite su MTG Arena calcolando il **GIH WR%** (*Game-In-Hand Win Rate*), ovvero la percentuale di vittoria quando quella carta si trova nella tua mano iniziale o viene pescata durante la partita.
+- **Grado A (GIH WR% > 60%)**: Bombe che vincono da sole.
+- **Grado B (GIH WR% 56-60%)**: Ottime carte, da prendere subito nei tuoi colori.
+- **Grado C (GIH WR% 53-56%)**: Carte solide e riempitivi necessari per la curva.
+- **Grado D / F (GIH WR% < 52%)**: Carte inefficaci o troppi costi situazionali.
+
+### 2. La Teoria dei Quadranti (Quadrant Theory):
+Sviluppata dal famoso podcast *Limited Resources*, valuta ogni carta in **4 fasi di gioco**:
+1. **Sviluppo (Developing)**: Funziona bene nei turni 1-3? (es. 2/2 a costo 2).
+2. **In Vantaggio (Ahead)**: Ti aiuta a chiudere la partita se stai già vincendo?
+3. **In Svantaggio (Behind)**: Ti salva la vita se sei sotto pressione o stavi perdendo? (es. Rimozioni o bloccanti enormi).
+4. **Stallo del Campo (Parity)**: Sblocca la situazione quando entrambi i giocatori hanno molte creature in campo? (es. Volanti o Bombe).
+
+> 💡 **La regola d'oro moderna**: Le carte migliori sono quelle che eccellono sia in *Sviluppo* che quando sei *In Svantaggio*!
+      `,
+      en: `
+B.R.E.A.D. was created over 20 years ago. In modern Magic, sets are faster and far more synergy-driven! Modern pros rely on two advanced tools:
+
+### 1. 17Lands.com Data (GIH WR% & A/B/C/D Letter Grades):
+*17Lands* tracks millions of games on MTG Arena to calculate **GIH WR%** (*Game-In-Hand Win Rate*): the win percentage when that card is drawn.
+- **Grade A (GIH WR% > 60%)**: Game-winning bombs.
+- **Grade B (GIH WR% 56-60%)**: Premium spells, auto-include in your colors.
+- **Grade C (GIH WR% 53-56%)**: Solid role-players & curve fillers.
+- **Grade D / F (GIH WR% < 52%)**: Weak or overly narrow cards.
+
+### 2. Quadrant Theory:
+Popularized by the *Limited Resources* podcast, it evaluates cards across **4 game states**:
+1. **Developing**: Is it good on turns 1-3? (e.g. 2-drop 2/2).
+2. **Ahead**: Does it help close the game when you are already winning?
+3. **Behind**: Does it save you when you are behind on board? (e.g. Removal or big blockers).
+4. **Parity**: Does it break board stalls? (e.g. Flying or massive threats).
+
+> 💡 **Modern golden rule**: The best cards are those that perform great both in *Developing* and when you are *Behind*!
+      `
+    },
+    highlightList: {
+      it: [
+        '17Lands GIH WR%: Dati reali su milioni di partite',
+        'Grado A/B/C/D/F più preciso del semplice BREAD',
+        'Teoria dei Quadranti: Valuta la carta nelle 4 fasi di gioco',
+        'Privilegia carte buone quando sei IN SVANTAGGIO per rimontare'
+      ],
+      en: [
+        '17Lands GIH WR%: Empirical data from millions of Arena games',
+        'A/B/C/D/F Grade system is far more accurate than BREAD',
+        'Quadrant Theory: Evaluates performance across all 4 game states',
+        'Prioritize cards that help when you are BEHIND'
+      ]
+    }
+  },
+  {
     id: 'deckbuilding',
-    title: '3. Deckbuilding & Curva di Mana',
+    title: '4. Deckbuilding & Curva di Mana',
     subtitle: 'Come trasformare le tue scelte in un mazzo vincente',
     titles: {
-      it: '3. Deckbuilding & Curva di Mana',
-      en: '3. Deckbuilding & Mana Curve'
+      it: '4. Deckbuilding & Curva di Mana',
+      en: '4. Deckbuilding & Mana Curve'
     },
     subtitles: {
       it: 'Come trasformare le tue scelte in un mazzo vincente',
@@ -172,11 +241,11 @@ Games are often decided in the early turns. You can't rely just on 6-mana Dragon
   },
   {
     id: 'signals',
-    title: '4. Trovare la tua Corsia (Segnali)',
+    title: '5. Trovare la tua Corsia (Segnali)',
     subtitle: 'Capire quali colori sono "aperti" al tavolo',
     titles: {
-      it: '4. Trovare la tua Corsia (Segnali)',
-      en: '4. Reading Signals (Finding your Lane)'
+      it: '5. Trovare la tua Corsia (Segnali)',
+      en: '5. Reading Signals (Finding your Lane)'
     },
     subtitles: {
       it: 'Capire quali colori sono "aperti" al tavolo',
@@ -352,11 +421,27 @@ export const SET_GUIDES = [
 
 export const GLOSSARY = [
   {
-    term: 'BREAD',
-    desc: 'Acronimo per prioritizzare i pick: Bombs, Removal, Evasion, Aggro, Dirt.',
+    term: '17Lands GIH WR%',
+    desc: 'Percentuale di vittoria (Game-In-Hand Win Rate) calcolata su milioni di partite su MTG Arena. Il gold standard della valutazione moderna.',
     descs: {
-      it: 'Acronimo per prioritizzare i pick: Bombs, Removal, Evasion, Aggro, Dirt.',
-      en: 'Acronym for pick priority: Bombs, Removal, Evasion, Aggro, Dregs.'
+      it: 'Percentuale di vittoria (Game-In-Hand Win Rate) calcolata su milioni di partite su MTG Arena. Il gold standard della valutazione moderna.',
+      en: 'Game-In-Hand Win Rate calculated from millions of MTG Arena games. The gold standard of modern card evaluation.'
+    }
+  },
+  {
+    term: 'Teoria dei Quadranti (Quadrant Theory)',
+    desc: 'Metodo di valutazione delle carte in 4 fasi: Sviluppo (turni 1-3), In Vantaggio, In Svantaggio, Stallo.',
+    descs: {
+      it: 'Metodo di valutazione delle carte in 4 fasi: Sviluppo (turni 1-3), In Vantaggio, In Svantaggio, Stallo.',
+      en: 'Card evaluation framework analyzing performance across 4 game states: Developing, Ahead, Behind, Parity.'
+    }
+  },
+  {
+    term: 'BREAD',
+    desc: 'Acronimo classico per prioritizzare i pick: Bombs, Removal, Evasion, Aggro, Dirt.',
+    descs: {
+      it: 'Acronimo classico per prioritizzare i pick: Bombs, Removal, Evasion, Aggro, Dirt.',
+      en: 'Classic pick priority acronym: Bombs, Removal, Evasion, Aggro, Dregs.'
     }
   },
   {
@@ -381,22 +466,6 @@ export const GLOSSARY = [
     descs: {
       it: 'Magie che distruggono, esiliano o neutralizzano creature o minacce avversarie.',
       en: 'Spells that destroy, exile, or counter opponent creatures and threats.'
-    }
-  },
-  {
-    term: 'Splash / Splashare',
-    desc: 'Giocare 1 o 2 carte potentissime di un terzo colore, inserendo solo 2-3 terre di quel colore.',
-    descs: {
-      it: 'Giocare 1 o 2 carte potentissime di un terzo colore, inserendo solo 2-3 terre di quel colore.',
-      en: 'Playing 1 or 2 powerful cards of a third color by adding just 2-3 lands of that color.'
-    }
-  },
-  {
-    term: 'Open Color / Colore Aperto',
-    desc: 'Un colore che i giocatori vicini a te non stanno draftando.',
-    descs: {
-      it: 'Un colore che i giocatori vicini a te non stanno draftando, lasciandoti le carte migliori.',
-      en: 'A color that neighboring players are not drafting, allowing good cards to reach you.'
     }
   }
 ];

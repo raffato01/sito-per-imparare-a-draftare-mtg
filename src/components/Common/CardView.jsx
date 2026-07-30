@@ -57,22 +57,36 @@ export function CardView({
       >
         {/* Coach Suggestion Badge */}
         {isSuggested && (
-          <div className="absolute top-2 left-2 z-20 bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full text-xs flex items-[#000] items-center gap-1 shadow-md">
+          <div className="absolute top-2 left-2 z-20 bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-full text-[10px] sm:text-xs flex items-center gap-1 shadow-md">
             <span>✨ CONSIGLIATO</span>
           </div>
         )}
 
-        {/* BREAD Badge */}
-        {card.breadCategory && (
+        {/* 17Lands / BREAD Badge */}
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-1">
+          {card.breadCategory && (
+            <div
+              className={`px-1.5 py-0.5 rounded-md text-[10px] font-black shadow-md ${
+                breadColors[card.breadCategory] || 'bg-slate-700'
+              }`}
+              title={`Categoria BREAD: ${breadNames[card.breadCategory]}`}
+            >
+              {card.breadCategory}
+            </div>
+          )}
           <div
-            className={`absolute top-2 right-2 z-20 px-2 py-0.5 rounded-md text-[10px] font-bold shadow-md ${
-              breadColors[card.breadCategory] || 'bg-slate-700'
+            className={`px-1.5 py-0.5 rounded-md text-[10px] font-black shadow-md border ${
+              card.rarity === 'mythic' || card.breadCategory === 'B'
+                ? 'bg-amber-500 text-slate-950 border-amber-300'
+                : card.isRemoval || card.breadCategory === 'R'
+                ? 'bg-emerald-600 text-white border-emerald-400'
+                : 'bg-slate-800 text-slate-200 border-slate-700'
             }`}
-            title={`Categoria BREAD: ${breadNames[card.breadCategory]}`}
+            title="17Lands Grade (Giudizio Moderno)"
           >
-            {card.breadCategory}
+            {card.breadCategory === 'B' ? 'Grade A' : card.isRemoval ? 'Grade B+' : card.rarity === 'uncommon' ? 'Grade B' : 'Grade C'}
           </div>
-        )}
+        </div>
 
         {/* Card Image Container */}
         <div className="relative aspect-[488/680] w-full bg-slate-950 overflow-hidden cursor-pointer">

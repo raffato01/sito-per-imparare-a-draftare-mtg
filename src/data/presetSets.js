@@ -54,4 +54,3 @@ export const BASIC_LANDS = {
   R: { name: 'Montagna', type: 'Mountain', color: 'R', id: 'basic-land-r', image: 'https://cards.scryfall.io/normal/front/a/e/aee52c21-f09c-4993-8a39-ec45e43a6d71.jpg?1730490020' },
   G: { name: 'Foresta', type: 'Forest', color: 'G', id: 'basic-land-g', image: 'https://cards.scryfall.io/normal/front/d/2/d2ef02a2-3f19-48e0-a7d0-8f9611b8b64b.jpg?1730490029' }
 };
-
