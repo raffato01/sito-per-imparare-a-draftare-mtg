@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { PRESET_SETS } from '../../data/presetSets';
-import { Users, Sparkles, ArrowRight, RefreshCw, Flame } from 'lucide-react';
+import { TRANSLATIONS } from '../../data/translations';
+import { Users, Flame, ArrowRight, RefreshCw, Bot, ShieldAlert, Sparkles } from 'lucide-react';
 
-export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
+export function SetSelector({ onStartDraft, isLoading, errorMessage, lang = 'it' }) {
   const [selectedSetCode, setSelectedSetCode] = useState('fdn');
   const [playerCount, setPlayerCount] = useState(8);
+  const [difficulty, setDifficulty] = useState('normal'); // 'easy', 'normal', 'hard'
   const [customSetCode, setCustomSetCode] = useState('');
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.it;
 
   const handleStart = () => {
     const setCodeToUse = customSetCode.trim().toLowerCase() || selectedSetCode;
-    onStartDraft({ setCode: setCodeToUse, playerCount });
+    onStartDraft({ setCode: setCodeToUse, playerCount, difficulty });
   };
 
   return (
@@ -18,24 +21,23 @@ export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
       {/* Header */}
       <div className="text-center space-y-3">
         <h2 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight">
-          Configura il tuo <span className="bg-gradient-to-r from-amber-400 via-rose-400 to-purple-400 bg-clip-text text-transparent">Tavolo da Draft</span>
+          {t.selectSetTitle}
         </h2>
         <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto">
-          Scegli un'espansione e il numero di giocatori al tavolo (8 o 6). La nostra IA simulerà gli altri giocatori!
+          {t.selectSetDesc}
         </p>
       </div>
 
-      {/* Error Banner if API fails */}
       {errorMessage && (
         <div className="p-4 bg-rose-950/80 border border-rose-500/50 rounded-2xl text-rose-200 text-sm text-center">
           {errorMessage}
         </div>
       )}
 
-      {/* Preset Sets Grid */}
+      {/* Step 1: Preset Sets Grid */}
       <div className="space-y-4">
         <label className="text-xs font-black tracking-wider text-slate-400 uppercase block text-center">
-          1. Seleziona l'Espansione MTG
+          {t.step1Set}
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {PRESET_SETS.map((set) => {
@@ -78,7 +80,7 @@ export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
                 </div>
 
                 <div className="text-[11px] font-mono text-slate-500 pt-2 border-t border-slate-800/80 flex justify-between">
-                  <span>Anno: {set.releaseYear}</span>
+                  <span>Year: {set.releaseYear}</span>
                   <span className="uppercase font-bold text-amber-500">[{set.code}]</span>
                 </div>
               </div>
@@ -87,37 +89,96 @@ export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
         </div>
       </div>
 
-      {/* Custom Scryfall Code Option (Including Upcoming / Spoiler Sets!) */}
+      {/* Step 2: Bot AI Difficulty Selection */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4 shadow-xl">
+        <label className="text-xs font-black tracking-wider text-slate-400 uppercase block text-center flex items-center justify-center gap-2">
+          <Bot size={16} className="text-amber-400" />
+          <span>{t.stepAiDiff}</span>
+        </label>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <div
+            onClick={() => setDifficulty('easy')}
+            className={`cursor-pointer p-4 rounded-2xl border transition-all space-y-1.5 ${
+              difficulty === 'easy'
+                ? 'bg-emerald-500/20 border-emerald-500 ring-2 ring-emerald-500/30 text-emerald-300'
+                : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <h4 className="font-extrabold text-sm flex items-center gap-1.5 text-white">
+              <span>{t.diffEasy}</span>
+            </h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              {t.diffEasyDesc}
+            </p>
+          </div>
+
+          <div
+            onClick={() => setDifficulty('normal')}
+            className={`cursor-pointer p-4 rounded-2xl border transition-all space-y-1.5 ${
+              difficulty === 'normal'
+                ? 'bg-amber-500/20 border-amber-500 ring-2 ring-amber-500/30 text-amber-300'
+                : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <h4 className="font-extrabold text-sm flex items-center gap-1.5 text-white">
+              <span>{t.diffNormal}</span>
+            </h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              {t.diffNormalDesc}
+            </p>
+          </div>
+
+          <div
+            onClick={() => setDifficulty('hard')}
+            className={`cursor-pointer p-4 rounded-2xl border transition-all space-y-1.5 ${
+              difficulty === 'hard'
+                ? 'bg-rose-500/20 border-rose-500 ring-2 ring-rose-500/30 text-rose-300'
+                : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <h4 className="font-extrabold text-sm flex items-center gap-1.5 text-white">
+              <span>{t.diffHard}</span>
+            </h4>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              {t.diffHardDesc}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Custom Scryfall Code Option */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-3 shadow-xl">
         <div className="flex items-center gap-2 text-amber-400 font-extrabold text-sm">
           <Flame size={18} className="animate-pulse text-amber-500" />
-          <span>SET IN USCITA & SPOILER SEASON 🚀</span>
+          <span>{t.customSetTitle}</span>
         </div>
         <p className="text-xs text-slate-300 leading-relaxed">
-          <strong>Puoi draftare anche i set non ancora usciti!</strong> Non appena le carte vengono svelate dalla Wizards of the Coast, Scryfall le inserisce nei suoi database. Inserisci il codice a 3 o 4 lettere del set (es. <code className="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 font-mono">fin</code> per Final Fantasy, <code className="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 font-mono">tds</code> per Tarkir Dragonstorm, <code className="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 font-mono">woe</code>, <code className="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 font-mono">mkm</code>):
+          {t.customSetDesc}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
           <input
             type="text"
             maxLength={6}
-            placeholder="es. fin, tds, woe..."
+            placeholder="e.g. fin, tds, woe..."
             value={customSetCode}
             onChange={(e) => setCustomSetCode(e.target.value)}
-            className="w-full sm:w-48 uppercase font-mono text-center bg-slate-950 border border-slate-700 rounded-xl py-2 px-4 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+            className="w-full sm:w-48 uppercase font-mono text-center bg-slate-950 border border-slate-700 rounded-xl py-2 px-4 text-sm text-white focus:outline-none focus:border-amber-500"
           />
           {customSetCode && (
             <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/30">
-              Set personalizzato attivo: [{customSetCode.toUpperCase()}]
+              Active Set Code: [{customSetCode.toUpperCase()}]
             </span>
           )}
         </div>
       </div>
 
-      {/* Table Player Count Selection */}
+      {/* Step 3: Table Player Count Selection */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4">
         <label className="text-xs font-black tracking-wider text-slate-400 uppercase block text-center">
-          2. Scegli le Dimensioni del Tavolo
+          {t.step2Table}
         </label>
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
           <button
@@ -129,8 +190,8 @@ export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
             }`}
           >
             <Users size={24} />
-            <span className="font-extrabold text-base">Tavolo da 8</span>
-            <span className="text-[10px] text-slate-400">Standard MTG (Tu + 7 Bot)</span>
+            <span className="font-extrabold text-base">{t.table8}</span>
+            <span className="text-[10px] text-slate-400">{t.table8Sub}</span>
           </button>
 
           <button
@@ -142,8 +203,8 @@ export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
             }`}
           >
             <Users size={24} />
-            <span className="font-extrabold text-base">Tavolo da 6</span>
-            <span className="text-[10px] text-slate-400">Partita Veloce (Tu + 5 Bot)</span>
+            <span className="font-extrabold text-base">{t.table6}</span>
+            <span className="text-[10px] text-slate-400">{t.table6Sub}</span>
           </button>
         </div>
       </div>
@@ -158,11 +219,11 @@ export function SetSelector({ onStartDraft, isLoading, errorMessage }) {
           {isLoading ? (
             <>
               <RefreshCw className="animate-spin" size={22} />
-              <span>Preparazione Bustine...</span>
+              <span>{t.loadingBooster}</span>
             </>
           ) : (
             <>
-              <span>APRI LE BUSTINE E INIZIA IL DRAFT</span>
+              <span>{t.btnLaunch}</span>
               <ArrowRight size={22} />
             </>
           )}

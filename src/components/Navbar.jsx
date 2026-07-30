@@ -1,7 +1,10 @@
 import React from 'react';
-import { BookOpen, Sparkles, Layers, Users, Swords, HelpCircle } from 'lucide-react';
+import { BookOpen, Sparkles, Layers, Users, Swords, HelpCircle, Globe } from 'lucide-react';
+import { TRANSLATIONS } from '../data/translations';
 
-export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
+export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode, lang = 'it', setLang }) {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.it;
+
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -18,9 +21,9 @@ export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
           </div>
           <div>
             <h1 className="font-extrabold text-lg tracking-tight text-slate-100 group-hover:text-amber-400 transition-colors flex items-center gap-2">
-              Draft Academy <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30">IT</span>
+              {t.appTitle} <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30 uppercase">{lang}</span>
             </h1>
-            <p className="text-[11px] text-slate-400 font-medium hidden sm:block">Impara a draftare su Magic: The Gathering</p>
+            <p className="text-[11px] text-slate-400 font-medium hidden sm:block">{t.appSubtitle}</p>
           </div>
         </div>
 
@@ -35,7 +38,7 @@ export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
             }`}
           >
             <BookOpen size={16} />
-            <span>Guida</span>
+            <span>{t.navAcademy}</span>
           </button>
 
           <button
@@ -47,7 +50,7 @@ export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
             }`}
           >
             <Sparkles size={16} />
-            <span>Solo Draft</span>
+            <span>{t.navSolo}</span>
           </button>
 
           <button
@@ -59,7 +62,7 @@ export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
             }`}
           >
             <Users size={16} />
-            <span>Stanza Amici 👥</span>
+            <span>{t.navMultiplayer}</span>
           </button>
 
           <button
@@ -71,7 +74,7 @@ export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
             }`}
           >
             <Layers size={16} />
-            <span>Deck Builder</span>
+            <span>{t.navDeckBuilder}</span>
           </button>
 
           <button
@@ -83,24 +86,36 @@ export function Navbar({ activeTab, setActiveTab, coachMode, setCoachMode }) {
             }`}
           >
             <Swords size={16} />
-            <span>Match 1v1 ⚔️</span>
+            <span>{t.navMatch}</span>
           </button>
         </nav>
 
-        {/* Coach Mode Toggle */}
-        <div className="hidden lg:flex items-center gap-3">
+        {/* Controls: Language Switcher & Coach Mode */}
+        <div className="flex items-center gap-2">
+          
+          {/* Language Toggle Button */}
+          <button
+            onClick={() => setLang(lang === 'it' ? 'en' : 'it')}
+            className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-slate-300 font-extrabold text-xs flex items-center gap-1.5 transition-all"
+            title="Switch Language / Cambia Lingua"
+          >
+            <Globe size={14} className="text-amber-400" />
+            <span className="uppercase">{lang === 'it' ? '🇮🇹 IT' : '🇬🇧 EN'}</span>
+          </button>
+
+          {/* Coach Mode Toggle */}
           <button
             onClick={() => setCoachMode(!coachMode)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+            className={`hidden md:flex px-3 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 transition-all border ${
               coachMode
                 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10 shadow-lg'
                 : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
             }`}
-            title="Attiva/Disattiva i consigli di pick in tempo reale"
           >
             <HelpCircle size={14} className={coachMode ? 'animate-bounce text-emerald-400' : ''} />
-            <span>Coach: {coachMode ? 'ATTIVO 💡' : 'OFF'}</span>
+            <span>Coach: {coachMode ? t.active : t.off}</span>
           </button>
+
         </div>
 
       </div>

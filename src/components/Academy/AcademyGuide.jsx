@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { TUTORIAL_LESSONS, GLOSSARY } from '../../data/tutorialData';
+import { TRANSLATIONS } from '../../data/translations';
 import { BookOpen, Sparkles, Award, Layers, BarChart2, Compass, Play, ChevronRight, CheckCircle } from 'lucide-react';
 
 /**
- * Lightweight Markdown-to-JSX parser to properly format headings, bold text, lists, and quote blocks
+ * Lightweight Markdown-to-JSX parser
  */
 function renderMarkdown(text) {
   if (!text) return null;
@@ -91,8 +92,9 @@ function renderMarkdown(text) {
   return elements;
 }
 
-export function AcademyGuide({ onStartDraft }) {
+export function AcademyGuide({ onStartDraft, lang = 'it' }) {
   const [activeLessonId, setActiveLessonId] = useState('intro');
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.it;
 
   const activeLesson = TUTORIAL_LESSONS.find(l => l.id === activeLessonId) || TUTORIAL_LESSONS[0];
 
@@ -118,13 +120,13 @@ export function AcademyGuide({ onStartDraft }) {
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">
             <Sparkles size={14} />
-            <span>MTG DRAFT ACADEMY PER PRINCIPIANTI</span>
+            <span>{t.heroTag}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-slate-100 tracking-tight leading-tight">
-            Impara a Draftare come un Pro <span className="bg-gradient-to-r from-amber-400 via-rose-400 to-purple-400 bg-clip-text text-transparent">in pochi minuti!</span>
+            {t.heroTitlePrefix} <span className="bg-gradient-to-r from-amber-400 via-rose-400 to-purple-400 bg-clip-text text-transparent">{t.heroTitleSuffix}</span>
           </h2>
           <p className="text-slate-300 text-base sm:text-lg leading-relaxed">
-            Il formato Draft è il modo più divertente per giocare a Magic: The Gathering. Segui queste lezioni guidate per scoprire come scegliere le carte migliori, bilanciare la curva di mana e vincere!
+            {t.heroDesc}
           </p>
           <div className="pt-2 flex flex-wrap gap-4">
             <button
@@ -132,7 +134,7 @@ export function AcademyGuide({ onStartDraft }) {
               className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-extrabold text-sm sm:text-base shadow-xl shadow-amber-500/20 flex items-center gap-2 transform hover:-translate-y-0.5 transition-all"
             >
               <Play size={18} fill="currentColor" />
-              <span>INIZIA SUBITO IL DRAFT</span>
+              <span>{t.btnStartDraft}</span>
             </button>
           </div>
         </div>
@@ -143,10 +145,11 @@ export function AcademyGuide({ onStartDraft }) {
         
         {/* Sidebar Lesson Navigation */}
         <div className="lg:col-span-4 space-y-3">
-          <h3 className="text-xs font-black tracking-wider text-slate-400 uppercase px-1">Lezioni Guidate</h3>
+          <h3 className="text-xs font-black tracking-wider text-slate-400 uppercase px-1">{t.lessonsTitle}</h3>
           <div className="space-y-2">
             {TUTORIAL_LESSONS.map((lesson) => {
               const isActive = lesson.id === activeLessonId;
+              const lessonTitle = lesson.titles ? lesson.titles[lang] : lesson.title;
               return (
                 <button
                   key={lesson.id}
@@ -166,7 +169,7 @@ export function AcademyGuide({ onStartDraft }) {
                       {isActive && <ChevronRight size={16} className="text-amber-400" />}
                     </div>
                     <h4 className={`font-bold text-sm mt-0.5 ${isActive ? 'text-slate-100' : 'text-slate-300'}`}>
-                      {lesson.title}
+                      {lessonTitle}
                     </h4>
                   </div>
                 </button>
@@ -180,23 +183,27 @@ export function AcademyGuide({ onStartDraft }) {
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
             <div className="border-b border-slate-800 pb-4">
               <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">{activeLesson.badge}</span>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">{activeLesson.title}</h3>
-              <p className="text-sm text-slate-400 mt-1">{activeLesson.subtitle}</p>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
+                {activeLesson.titles ? activeLesson.titles[lang] : activeLesson.title}
+              </h3>
+              <p className="text-sm text-slate-400 mt-1">
+                {activeLesson.subtitles ? activeLesson.subtitles[lang] : activeLesson.subtitle}
+              </p>
             </div>
 
             {/* Parsed Markdown Body */}
             <div className="space-y-3">
-              {renderMarkdown(activeLesson.content)}
+              {renderMarkdown(activeLesson.contents ? activeLesson.contents[lang] : activeLesson.content)}
             </div>
 
             {/* Key Takeaways Box */}
             <div className="bg-slate-950/80 border border-amber-500/20 rounded-2xl p-5 space-y-3 mt-6">
               <h4 className="font-extrabold text-sm text-amber-400 flex items-center gap-2">
                 <CheckCircle size={16} />
-                <span>Punti Chiave da Ricordare:</span>
+                <span>{t.keyPointsTitle}</span>
               </h4>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-slate-300">
-                {activeLesson.highlights.map((item, idx) => (
+                {(activeLesson.highlightList ? activeLesson.highlightList[lang] : activeLesson.highlights).map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
                     <span className="text-amber-400 font-bold">•</span>
                     <span>{item}</span>
@@ -210,13 +217,13 @@ export function AcademyGuide({ onStartDraft }) {
           {/* MTG Glossary */}
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 space-y-4">
             <h4 className="font-extrabold text-base text-slate-200 flex items-center gap-2">
-              <span>📖 Glossario rapido dei termini MTG Limited</span>
+              <span>{t.glossaryTitle}</span>
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {GLOSSARY.map((g, idx) => (
                 <div key={idx} className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-xs">
                   <span className="font-bold text-amber-400 block mb-0.5">{g.term}</span>
-                  <span className="text-slate-300">{g.desc}</span>
+                  <span className="text-slate-300">{g.descs ? g.descs[lang] : g.desc}</span>
                 </div>
               ))}
             </div>
