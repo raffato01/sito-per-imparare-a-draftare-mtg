@@ -145,70 +145,68 @@ export function DraftBoard({
   const passDirectionText = packNum % 2 === 1 ? t.passLeft : t.passRight;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 space-y-6 animate-fadeIn pb-32">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 animate-fadeIn pb-28 sm:pb-32">
       
       {/* Top Draft Header & Table Status */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={onCancel}
-            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-colors"
+            className="px-2.5 py-1.5 bg-slate-800 active:bg-slate-600 text-slate-300 text-[11px] font-bold rounded-lg transition-colors shrink-0"
           >
-            ← Cancel
+            ←
           </button>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                {setInfo?.name || 'Draft Set'}
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 truncate">
+                {setInfo?.name || 'Draft'}
               </span>
-              <span className="text-xs text-slate-400 font-mono">
-                {playerCount} Players (AI: {difficulty.toUpperCase()})
+              <span className="text-[10px] text-slate-500 font-mono">
+                {playerCount}P · {difficulty.toUpperCase()}
               </span>
             </div>
-            <h2 className="text-2xl font-black text-white mt-0.5">
-              {t.pack} {packNum} / 3 — {t.pick} {pickNum} / 15
+            <h2 className="text-lg sm:text-2xl font-black text-white mt-0.5">
+              {t.pack} {packNum}/3 — {t.pick} {pickNum}/15
             </h2>
           </div>
         </div>
 
         {/* Passing Direction Indicator */}
-        <div className="flex items-center gap-6 bg-slate-950/80 px-5 py-2.5 rounded-2xl border border-slate-800">
+        <div className="flex items-center gap-4 sm:gap-6 bg-slate-950/80 px-3 sm:px-5 py-2 rounded-xl sm:rounded-2xl border border-slate-800 w-full sm:w-auto justify-center">
           <div className="text-center">
-            <span className="text-[10px] text-slate-400 font-bold block">{t.passDirection}</span>
-            <span className="text-sm font-extrabold text-amber-400 flex items-center gap-1.5">
-              <ArrowLeftRight size={16} />
+            <span className="text-[9px] sm:text-[10px] text-slate-400 font-bold block">{t.passDirection}</span>
+            <span className="text-xs sm:text-sm font-extrabold text-amber-400 flex items-center gap-1">
+              <ArrowLeftRight size={14} />
               <span>{passDirectionText}</span>
             </span>
           </div>
-
-          <div className="h-8 w-px bg-slate-800" />
-
+          <div className="h-6 w-px bg-slate-800" />
           <div className="text-center">
-            <span className="text-[10px] text-slate-400 font-bold block">{t.cardsPicked}</span>
-            <span className="text-sm font-extrabold text-white">{humanPool.length} / 45</span>
+            <span className="text-[9px] sm:text-[10px] text-slate-400 font-bold block">{t.cardsPicked}</span>
+            <span className="text-xs sm:text-sm font-extrabold text-white">{humanPool.length}/45</span>
           </div>
         </div>
 
       </div>
 
       {/* Visual Table Seats Bar */}
-      <div className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-3">
-        <div className="flex items-center justify-between overflow-x-auto pb-1 gap-2">
+      <div className="bg-slate-950/80 border border-slate-800/80 rounded-xl sm:rounded-2xl p-2 sm:p-3 overflow-x-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-max sm:min-w-0">
           {Array.from({ length: playerCount }).map((_, idx) => {
             const isHuman = idx === humanSeat;
             return (
               <div
                 key={idx}
-                className={`flex-1 min-w-[70px] p-2 rounded-xl border text-center transition-all ${
+                className={`flex-1 min-w-[52px] sm:min-w-[70px] p-1.5 sm:p-2 rounded-lg sm:rounded-xl border text-center transition-all ${
                   isHuman
-                    ? 'bg-amber-500/20 border-amber-500/60 text-amber-300 ring-2 ring-amber-500/30'
+                    ? 'bg-amber-500/20 border-amber-500/60 text-amber-300 ring-1 sm:ring-2 ring-amber-500/30'
                     : 'bg-slate-900 border-slate-800 text-slate-400'
                 }`}
               >
-                <div className="text-xs font-bold">{isHuman ? 'YOU 👤' : `Bot ${idx}`}</div>
-                <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
-                  {seatsPacks[idx]?.length || 0} cards
+                <div className="text-[10px] sm:text-xs font-bold">{isHuman ? '👤' : `🤖${idx}`}</div>
+                <div className="text-[9px] text-slate-500 font-mono">
+                  {seatsPacks[idx]?.length || 0}
                 </div>
               </div>
             );
@@ -244,7 +242,7 @@ export function DraftBoard({
             Passing pack...
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
             {currentPack.map((card) => {
               const isSuggested = coachAdvice?.suggestedCard?.instanceId === card.instanceId;
               return (

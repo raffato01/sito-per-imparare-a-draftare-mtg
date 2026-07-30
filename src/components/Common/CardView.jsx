@@ -41,17 +41,17 @@ export function CardView({
   };
 
   const sizeClasses = {
-    small: 'w-28 sm:w-32 text-xs',
-    medium: 'w-36 sm:w-44 text-sm',
-    large: 'w-48 sm:w-60 text-base'
+    small: 'w-full text-xs',
+    medium: 'w-full text-sm',
+    large: 'w-full text-base'
   };
 
   return (
     <>
       <div
-        className={`group relative flex flex-col rounded-xl overflow-hidden border-2 transition-all duration-300 transform hover:-translate-y-1.5 hover:shadow-2xl ${
+        className={`group relative flex flex-col rounded-xl overflow-hidden border-2 transition-all duration-200 transform active:scale-95 sm:hover:-translate-y-1.5 sm:hover:shadow-2xl ${
           rarityBorders[card.rarity] || rarityBorders.common
-        } ${isSuggested ? 'ring-4 ring-amber-400 ring-offset-2 ring-offset-slate-900 animate-pulse' : ''} ${
+        } ${isSuggested ? 'ring-2 sm:ring-4 ring-amber-400 ring-offset-1 sm:ring-offset-2 ring-offset-slate-900' : ''} ${
           sizeClasses[size]
         }`}
       >
@@ -133,14 +133,14 @@ export function CardView({
           {onPick && (
             <button
               onClick={() => onPick(card)}
-              className={`mt-1.5 w-full py-1.5 px-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1 transition-all ${
+              className={`mt-1.5 w-full py-2.5 sm:py-1.5 px-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1 transition-all active:scale-95 ${
                 isSuggested
-                  ? 'bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black shadow-lg shadow-amber-500/20'
-                  : 'bg-sky-600 hover:bg-sky-500 text-white'
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-400 active:from-amber-400 text-slate-950 font-black shadow-lg shadow-amber-500/20'
+                  : 'bg-sky-600 active:bg-sky-500 text-white'
               }`}
             >
               <Check size={14} />
-              <span>SCEGLI CARTA</span>
+              <span>PICK</span>
             </button>
           )}
         </div>
@@ -153,7 +153,7 @@ export function CardView({
           onClick={() => setShowModal(false)}
         >
           <div
-            className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full flex flex-col md:flex-row gap-6 shadow-2xl"
+            className="relative bg-slate-900 border border-slate-700 rounded-2xl p-4 sm:p-6 max-w-lg w-full flex flex-col md:flex-row gap-4 sm:gap-6 shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-full md:w-60 flex-shrink-0">
