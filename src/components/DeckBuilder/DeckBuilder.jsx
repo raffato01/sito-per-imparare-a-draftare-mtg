@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BASIC_LANDS } from '../../data/presetSets';
 import { buildSmartDeck, analyzeUserDeck } from '../../services/deckCoachLogic';
 import confetti from 'canvas-confetti';
-import { Sparkles, Layers, Plus, Minus, Download, ClipboardCopy, Check, CheckCircle2, Bot, Wand2 } from 'lucide-react';
+import { Sparkles, Layers, Plus, Minus, Download, ClipboardCopy, Check, Bot, Wand2, Eye, Info } from 'lucide-react';
 
 export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
   const [maindeck, setMaindeck] = useState([]);
@@ -10,6 +10,9 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
   const [landCounts, setLandCounts] = useState({ W: 0, U: 0, B: 0, R: 0, G: 0 });
   const [copiedArena, setCopiedArena] = useState(false);
   const [coachAnalysis, setCoachAnalysis] = useState(null);
+  
+  // Live Card Preview state on hover
+  const [previewCard, setPreviewCard] = useState(null);
 
   const isIT = lang === 'it';
 
@@ -17,6 +20,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
     if (draftedPool && draftedPool.length > 0) {
       setSideboard([...draftedPool]);
       setMaindeck([]);
+      setPreviewCard(draftedPool[0] || null);
     }
   }, [draftedPool]);
 
@@ -37,6 +41,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
     setMaindeck(result.maindeckSpells);
     setSideboard(result.sideboardSpells);
     setLandCounts(result.landCounts);
+    if (result.maindeckSpells.length > 0) setPreviewCard(result.maindeckSpells[0]);
     confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
   };
 
@@ -179,13 +184,12 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
               {isIT
-                ? 'Sposta le carte dal Pool al Mazzo, oppure lascia che il Coach crei il mazzo ideale per te!'
-                : 'Move cards from Pool to Deck, or let the Coach build the optimal deck for you!'}
+                ? 'Passa il cursore su qualsiasi carta per vederne l\'immagine e i dettagli in tempo reale!'
+                : 'Hover over any card to view its full image and details in real time!'}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* SMART AUTO-BUILD COACH BUTTON */}
             <button
               onClick={handleAutoBuildDeck}
               className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-white font-black text-xs sm:text-sm shadow-xl flex items-center gap-2 transform hover:scale-105 active:scale-95 transition-all"
@@ -245,14 +249,14 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
         )}
       </div>
 
-      {/* Stats & Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      {/* Main Grid: 3-column Layout with Live Card Image Preview */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
         
-        {/* Left: Stats & Coach Analysis */}
-        <div className="lg:col-span-5 space-y-5">
+        {/* Column 1 (Left): Stats, Mana Curve & Coach Evaluation */}
+        <div className="md:col-span-4 space-y-5">
           
           {/* Deck Counter */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="font-extrabold text-sm text-slate-200">
                 {isIT ? 'Carte Mazzo' : 'Deck Cards'}
@@ -267,15 +271,15 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+              <div className="bg-slate-950 p-2 rounded-xl border border-slate-800">
                 <span className="text-slate-400 block font-bold text-[10px]">{isIT ? 'Creature' : 'Creatures'}</span>
                 <span className="text-sm font-black text-amber-400">{creaturesCount}</span>
               </div>
-              <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+              <div className="bg-slate-950 p-2 rounded-xl border border-slate-800">
                 <span className="text-slate-400 block font-bold text-[10px]">{isIT ? 'Magie' : 'Spells'}</span>
                 <span className="text-sm font-black text-sky-400">{nonCreaturesCount}</span>
               </div>
-              <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+              <div className="bg-slate-950 p-2 rounded-xl border border-slate-800">
                 <span className="text-slate-400 block font-bold text-[10px]">{isIT ? 'Terre' : 'Lands'}</span>
                 <span className="text-sm font-black text-emerald-400">{totalBasicLands}</span>
               </div>
@@ -287,7 +291,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
                 {isIT ? 'Terre Base' : 'Basic Lands'}
               </span>
               {Object.entries(BASIC_LANDS).map(([col, landObj]) => (
-                <div key={col} className="flex items-center justify-between bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+                <div key={col} className="flex items-center justify-between bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800 text-xs">
                   <span className="font-bold text-slate-300 text-[11px]">{landObj.name}</span>
                   <div className="flex items-center gap-2">
                     <button onClick={() => updateLandCount(col, -1)} className="p-1 rounded bg-slate-800 active:bg-slate-600 text-slate-300">
@@ -304,11 +308,11 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
           </div>
 
           {/* Mana Curve */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xl">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
             <h4 className="font-extrabold text-xs text-slate-300 uppercase">
               {isIT ? 'Curva di Mana' : 'Mana Curve'}
             </h4>
-            <div className="flex items-end justify-between h-24 sm:h-32 pt-3 px-1 bg-slate-950/60 rounded-xl border border-slate-800">
+            <div className="flex items-end justify-between h-24 pt-3 px-1 bg-slate-950/60 rounded-xl border border-slate-800">
               {Object.entries(curveCounts).map(([cost, count]) => {
                 const h = (count / maxCurveVal) * 100;
                 return (
@@ -316,7 +320,7 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
                     <span className="text-[9px] font-mono text-amber-400 font-bold">{count}</span>
                     <div
                       style={{ height: `${Math.max(6, h)}%` }}
-                      className="w-full max-w-[20px] bg-gradient-to-t from-amber-600 to-yellow-400 rounded-t-sm transition-all"
+                      className="w-full max-w-[18px] bg-gradient-to-t from-amber-600 to-yellow-400 rounded-t-sm transition-all"
                     />
                     <span className="text-[9px] font-mono text-slate-500">{cost}</span>
                   </div>
@@ -325,17 +329,16 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
             </div>
           </div>
 
-          {/* Detailed Coach Evaluation Feedback */}
+          {/* Coach Analysis */}
           {coachAnalysis && (
-            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2 shadow-xl">
               <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
-                <Bot size={18} className="text-amber-400" />
-                <span>{isIT ? 'ANALISI COACH MAZZO:' : 'DECK COACH ANALYSIS:'}</span>
+                <Bot size={16} />
+                <span>{isIT ? 'ANALISI COACH:' : 'COACH ANALYSIS:'}</span>
               </div>
-
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {coachAnalysis.tips.map((tip, idx) => (
-                  <div key={idx} className="p-2.5 bg-slate-950/80 rounded-xl border border-slate-800 text-[11px] leading-relaxed text-slate-200">
+                  <div key={idx} className="p-2 bg-slate-950/80 rounded-lg border border-slate-800 text-[11px] leading-relaxed text-slate-300">
                     {tip.text}
                   </div>
                 ))}
@@ -345,66 +348,130 @@ export function DeckBuilder({ draftedPool = [], onResetDraft, lang = 'it' }) {
 
         </div>
 
-        {/* Right: Card Lists */}
-        <div className="lg:col-span-7 space-y-5">
+        {/* Column 2 (Middle): Interactive Maindeck & Sideboard Lists */}
+        <div className="md:col-span-5 space-y-5">
           
-          {/* Maindeck */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xl">
+          {/* Maindeck Spells List */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <h3 className="font-extrabold text-sm text-slate-100 flex items-center gap-2">
                 <Layers size={16} className="text-amber-400" />
-                <span>{isIT ? `Mazzo (${maindeck.length})` : `Deck (${maindeck.length})`}</span>
+                <span>{isIT ? `Mazzo Principale (${maindeck.length})` : `Main Deck (${maindeck.length})`}</span>
               </h3>
-              <span className="text-[10px] text-slate-500">{isIT ? 'Tap per rimuovere' : 'Tap to remove'}</span>
+              <span className="text-[10px] text-slate-500">{isIT ? 'Passa sopra / Tap per spostare' : 'Hover to view / Tap to move'}</span>
             </div>
 
             {maindeck.length === 0 ? (
               <div className="text-center py-8 text-slate-500 border border-dashed border-slate-800 rounded-xl text-xs">
-                {isIT ? 'Mazzo vuoto. Clicca su "Costruisci Mazzo Ideale" o aggiungi carte dal Pool!' : 'Empty deck. Click "Build Optimal Deck" or add cards from Pool!'}
+                {isIT ? 'Mazzo vuoto. Clicca su "Costruisci Mazzo Ideale" o aggiungi dal Pool!' : 'Empty deck. Click "Build Optimal Deck" or add from Pool!'}
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-80 overflow-y-auto pr-1">
+              <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
                 {maindeck.map(card => (
                   <div
                     key={card.instanceId}
+                    onMouseEnter={() => setPreviewCard(card)}
                     onClick={() => moveToSideboard(card)}
-                    className="group cursor-pointer p-2 bg-slate-950 hover:bg-slate-900 active:bg-slate-800 border border-slate-800 hover:border-rose-500/50 rounded-lg transition-all flex items-center justify-between text-xs"
+                    className={`group cursor-pointer p-2 rounded-lg border transition-all flex items-center justify-between text-xs ${
+                      previewCard?.instanceId === card.instanceId
+                        ? 'bg-amber-500/20 border-amber-500/80 text-amber-300 ring-1 ring-amber-500/30'
+                        : 'bg-slate-950 hover:bg-slate-900 border-slate-800 text-slate-200'
+                    }`}
                   >
-                    <div className="truncate min-w-0">
-                      <span className="font-bold text-slate-200 group-hover:text-rose-400 block truncate text-[11px]">{card.name}</span>
+                    <div className="truncate min-w-0 flex-1">
+                      <span className="font-bold block truncate text-[11px] group-hover:text-rose-400 transition-colors">{card.name}</span>
                       <span className="text-[9px] text-slate-500 block truncate">{card.typeLine?.split('—')[0]}</span>
                     </div>
-                    <span className="text-amber-400 font-mono text-[10px] font-bold ml-1 shrink-0">{card.manaCost}</span>
+                    <span className="text-amber-400 font-mono text-[10px] font-bold ml-2 shrink-0">{card.manaCost}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Sideboard / Pool */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3">
+          {/* Sideboard / Pool List */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <h3 className="font-extrabold text-sm text-slate-100">
-                {isIT ? `Pool (${sideboard.length})` : `Pool (${sideboard.length})`}
+                {isIT ? `Pool Carte Inutilizzate (${sideboard.length})` : `Unused Pool (${sideboard.length})`}
               </h3>
-              <span className="text-[10px] text-slate-500">{isIT ? 'Tap per aggiungere' : 'Tap to add'}</span>
+              <span className="text-[10px] text-slate-500">{isIT ? 'Passa sopra per anteprima' : 'Hover to preview'}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+            <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
               {sideboard.map(card => (
                 <div
                   key={card.instanceId}
+                  onMouseEnter={() => setPreviewCard(card)}
                   onClick={() => moveToMaindeck(card)}
-                  className="group cursor-pointer p-2 bg-slate-950/80 hover:bg-slate-900 active:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-lg transition-all flex items-center justify-between text-xs opacity-75 hover:opacity-100"
+                  className={`group cursor-pointer p-2 rounded-lg border transition-all flex items-center justify-between text-xs opacity-85 hover:opacity-100 ${
+                    previewCard?.instanceId === card.instanceId
+                      ? 'bg-amber-500/20 border-amber-500/80 text-amber-300 ring-1 ring-amber-500/30'
+                      : 'bg-slate-950/80 hover:bg-slate-900 border-slate-800 text-slate-300'
+                  }`}
                 >
-                  <div className="truncate min-w-0">
-                    <span className="font-bold text-slate-300 group-hover:text-emerald-400 block truncate text-[11px]">{card.name}</span>
+                  <div className="truncate min-w-0 flex-1">
+                    <span className="font-bold block truncate text-[11px] group-hover:text-emerald-400 transition-colors">{card.name}</span>
                     <span className="text-[9px] text-slate-500 block truncate">{card.typeLine?.split('—')[0]}</span>
                   </div>
-                  <span className="text-amber-400 font-mono text-[10px] font-bold ml-1 shrink-0">{card.manaCost}</span>
+                  <span className="text-amber-400 font-mono text-[10px] font-bold ml-2 shrink-0">{card.manaCost}</span>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Column 3 (Right): LIVE HD CARD IMAGE PREVIEW PANEL (Updates instantly on hover) */}
+        <div className="md:col-span-3 sticky top-20 space-y-3">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-3">
+            <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-amber-400 border-b border-slate-800 pb-2">
+              <span className="flex items-center gap-1.5">
+                <Eye size={16} />
+                <span>{isIT ? 'Anteprima Carta Live' : 'Live Card Preview'}</span>
+              </span>
+              {previewCard && (
+                <span className="text-[10px] text-slate-400 font-mono font-bold">{previewCard.manaCost}</span>
+              )}
+            </div>
+
+            {previewCard ? (
+              <div className="space-y-3 animate-fadeIn">
+                <div className="relative aspect-[488/680] w-full bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
+                  <img
+                    src={previewCard.imageUrl}
+                    alt={previewCard.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = 'https://cards.scryfall.io/large/back.jpg';
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-1 bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
+                  <div className="flex justify-between items-center font-bold text-white">
+                    <span className="truncate">{previewCard.name}</span>
+                    {previewCard.power && previewCard.toughness && (
+                      <span className="text-amber-400 font-mono text-[11px] font-black bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
+                        {previewCard.power}/{previewCard.toughness}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-400 italic">{previewCard.typeLine}</p>
+                  <p className="text-[11px] text-slate-300 mt-1 leading-relaxed line-clamp-4">
+                    {previewCard.oracleText || 'Nessun testo oracle.'}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-16 text-slate-500 space-y-2">
+                <Info size={32} className="mx-auto text-slate-600" />
+                <p className="text-xs leading-relaxed px-2">
+                  {isIT
+                    ? 'Passa il mouse su qualsiasi carta della lista a sinistra per vederne subito l\'immagine e i dettagli!'
+                    : 'Hover over any card on the left list to instantly preview its full image and text!'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
